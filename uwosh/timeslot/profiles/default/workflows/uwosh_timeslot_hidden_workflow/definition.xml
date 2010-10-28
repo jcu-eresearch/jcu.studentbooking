@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<dc-workflow workflow_id="uwosh_timeslot_hidden_workflow"
+             title="Hidden Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="hidden">
+ <permission>Access contents information</permission>
+ <permission>Modify portal content</permission>
+ <permission>View</permission>
+ <permission>uwosh.timeslot: Add Person</permission>
+ <state state_id="hidden" title="Hidden">
+  <description>Hidden from everyone except managers.</description>
+  <permission-map name="Access contents information"
+                  acquired="False">
+   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>Manager</permission-role>
+   <permission-role>uwosh_timeslot_ScheduleViewer</permission-role>
+   <permission-role>Member</permission-role>
+   <permission-role>Authenticated</permission-role>
+   <permission-role>Anonymous</permission-role>  
+  </permission-map>
+  <permission-map name="List folder contents"
+                  acquired="False">
+   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="View" acquired="False">
+   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="uwosh.timeslot: Add Person"
+                  acquired="False">
+   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>Manager</permission-role>
+   <permission-role>Member</permission-role>
+   <permission-role>Authenticated</permission-role>  
+  </permission-map>
+ </state>
+
+ <variable variable_id="action" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>Previous transition</description>
+  <default>
+   
+   <expression>transition/getId|nothing</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <variable variable_id="actor" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>The ID of the user who performed the last transition
+</description>
+  <default>
+   
+   <expression>user/getId</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <variable variable_id="comments" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>Comment about the last transition
+</description>
+  <default>
+   
+   <expression>python:state_change.kwargs.get('comment', '')</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <variable variable_id="review_history" for_catalog="False"
+           for_status="False" update_always="False">
+  <description>Provides access to workflow history
+</description>
+  <default>
+   
+   <expression>state_change/getHistory</expression>
+  </default>
+  <guard>
+   <guard-permission>Request review</guard-permission>
+   <guard-permission>Review portal content</guard-permission>
+  </guard>
+ </variable>
+ <variable variable_id="time" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>When the previous transition was performed
+</description>
+  <default>
+   
+   <expression>state_change/getDateTime</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+</dc-workflow>

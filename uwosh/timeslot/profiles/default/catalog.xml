@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<object name="portal_catalog" meta_type="Plone Catalog Tool">
+
+ <index name="getDate" meta_type="FieldIndex">
+  <indexed_attr value="getDate"/>
+ </index>
+
+ <index name="getStartTime" meta_type="FieldIndex">
+  <indexed_attr value="getStartTime"/>
+ </index>
+
+ <index name="getEndTime" meta_type="FieldIndex">
+  <indexed_attr value="getEndTime"/>
+ </index>
+
+ <column value="getDate"/>
+ <column value="getStartTime"/>
+ <column value="getEndTime"/>
+</object>

@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="uwosh.timeslot">
+
+<body>
+  <div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+      <h2 tal:content="string:${context/Title} - Sign Up Results" />
+    
+      <div tal:condition="python: view.areAnyRequiredFieldsEmpty() or not view.isAtLeastOneSlotSelected()">
+	<h3>Failure</h3>
+	<ul>
+	  <li tal:condition="not:view/isAtLeastOneSlotSelected">
+	    <p>You need to select at least one slot.</p>
+	  </li>
+	  <li tal:condition="view/areAnyRequiredFieldsEmpty">
+	    <p>You did not complete the following fields:</p>
+	    <ul>
+	      <li tal:repeat="field view/getListOfEmptyRequiredFields">
+	        <strong tal:content="field" />
+	      </li>
+	    </ul>
+	  </li>
+	</ul>
+      </div>
+      
+      <div tal:repeat="result view/results">
+	<tal:block tal:condition="python: result['success']">
+	  <tal:block tal:condition="not:result/waiting">
+	    <h3>Success</h3>
+	    <p>You have been successfully signed up for:<br />
+	       <span tal:content="result/slotLabel" /></p>
+	    <p tal:condition="view/isEmailValid">A confirmation email has been sent to you.</p>
+	  </tal:block>
+                    
+	  <tal:block tal:condition="result/waiting">
+	    <h3>Success</h3>
+	    <p>You have been successfully added to the waiting list for:<br />
+	      <span tal:content="result/slotLabel" /></p>
+	    <p tal:condition="view/isEmailValid">You will receive a confirmation email now and second one when a spot opens up.</p>
+	  </tal:block>
+	</tal:block>
+                
+	<tal:block tal:condition="not:result/success">
+	  <h3>Failure</h3>
+	  <p>The system was unable to register you for:<br />
+	    <span tal:content="result/slotLabel" /></p>
+	  <p tal:content="result/error" />
+	</tal:block>
+     </div>
+
+      <a tal:attributes="href string:${context/absolute_url};">Return to the signup sheet</a>
+    </tal:main-macro>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="uwosh_timeslot_ScheduleViewer"/>
+    <role name="uwosh_timeslot_ScheduleManager"/>
+  </roles>
+  <permissions>
+    <!-- -*- extra stuff goes here -*- -->
+    <permission name="uwosh.timeslot: Add Person" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
+    <permission name="uwosh.timeslot: Add Time Slot" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
+    <permission name="uwosh.timeslot: Add Day" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
+    <permission name="uwosh.timeslot: Add Signup Sheet" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="Manager" />
+      <role name="Contributor" />
+    </permission>
+    <permission name="uwosh.timeslot: Manage Schedule" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="Manager" />
+    </permission>
+    <permission name="uwosh.timeslot: View Schedule" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="uwosh_timeslot_ScheduleViewer"/>
+      <role name="Manager" />
+    </permission>
+    <permission name="Add portal content" acquire="True">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+    </permission>
+  </permissions>
+</rolemap>

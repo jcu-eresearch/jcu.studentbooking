@@ -1,0 +1,89 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="uwosh.timeslot">
+
+    <include package="plone.app.contentmenu" />
+
+    <browser:resource
+      name="uwosh_timeslot_custom.css"
+      file="uwosh_timeslot_custom.css"
+      />
+
+    <browser:resource
+      name="collapsiblelists.js"
+      file="collapsiblelists.js"
+      />
+
+    <browser:page
+      for="..interfaces.ISignupSheet"
+      name="manager-summary"
+      template="managersummary.pt"
+      allowed_interface=".choosetimeslot.IChooseTimeSlot"
+      permission="uwosh.timeslot.ViewSchedule"
+      />
+      
+    <browser:page
+      for="..interfaces.ISignupSheet"
+      name="export-to-csv"
+      class=".exporttocsv.ExportToCSV"
+      attribute="exportToCSV"
+      permission="uwosh.timeslot.ViewSchedule"
+      />
+    
+    <browser:page
+        for="..interfaces.ISignupSheet"
+        name="remove-all-people"
+        class=".removeallpeople.RemoveAllPeopleForm"
+        permission="uwosh.timeslot.ManageSchedule"
+        />
+	
+    <browser:page
+      for="..interfaces.ISignupSheet"
+      name="choose-timeslot-view"
+      class=".choosetimeslot.ChooseTimeSlot"
+      template="choosetimeslot.pt"
+      allowed_interface=".choosetimeslot.IChooseTimeSlot"
+      permission="zope2.View"
+      />
+
+    <browser:page
+      for="..interfaces.ISignupSheet"
+      name="show-reservations"
+      template="showreservations.pt"
+      class=".showreservations.ShowReservations"
+      permission="zope2.View"
+      />
+
+    <browser:page
+      for="..interfaces.ISignupSheet"
+      name="cancel-reservation"
+      class=".cancelreservation.CancelReservation"
+      attribute="cancelReservation"
+      permission="zope2.View"
+      />
+     
+    <browser:page
+      for="..interfaces.ISignupSheet"
+      name="submit-user-selection"
+      class=".submitselection.SubmitSelection"
+      attribute="submitUserSelection"
+      permission="zope2.View"
+      />
+  
+    <browser:page
+        for="..interfaces.ICloneable"
+        name="clone"
+        class=".clone.CloneForm"
+        permission="uwosh.timeslot.ManageSchedule"
+        />
+
+    <browser:menuItem
+      for="..interfaces.ISignupSheet"
+      menu="plone_displayviews"
+      title="Choose TimeSlot View"
+      action="choose-timeslot-view"
+      description="The default user visible view of a Signup Sheet"
+      />
+        
+</configure>

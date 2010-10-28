@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/@@standard_macros/page">
+<head>
+</head>
+
+<body>
+<div metal:fill-slot="body">
+
+  <h2>Cloning Results</h2>
+
+  <h3 tal:condition="view/success">Cloning successful.</h3>
+  
+  <h3 tal:condition="not:view/success">Cloning failed.</h3>
+  
+  <ul tal:repeat="error view/errors">
+    <li tal:content="error" />
+  </ul>
+  
+</div>
+</body>
+</html>

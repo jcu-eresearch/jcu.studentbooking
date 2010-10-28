@@ -1,0 +1,49 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="uwosh.timeslot">
+
+<body>
+  <div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main">
+      
+      <h2 tal:content="string:${context/Title} - Manager Summary" />
+    
+      <ul>
+	<li><a tal:attributes="href string:${context/absolute_url}/@@export-to-csv">Export to CSV</a></li>
+	<li><a tal:attributes="href string:${context/absolute_url}/@@remove-all-people">Remove all people</a></li>
+      </ul>
+      
+      <h3 tal:condition="not:context/getDays">There are no upcoming days for this signup sheet.</h3>
+
+      <ul>
+	<div tal:repeat="day context/getDays">
+	  <li class="collapsibleListHeader">
+	    <h3 tal:content="day/Title" />
+	  </li>
+	
+	  <ul class="collapsibleList">
+	    <li tal:condition="not:day/getTimeSlots">No timeslots are available for this day.</li>
+	  
+	    <div tal:repeat="timeSlot day/getTimeSlots">
+	      <li class="collapsibleListHeader">
+	        <h4 tal:content="timeSlot/Title" />
+	      </li>
+	  
+	      <ul class="collapsibleList">
+		<li tal:condition="not:timeSlot/getPeople">No one is signed up for this slot.</li>
+		
+		<li tal:repeat="person timeSlot/getPeople">
+		  <span><a tal:attributes="href person/absolute_url" tal:content="string:${person/Title} &lt;${person/email}&gt;" /> - </span>
+	          <span tal:content="person/getReviewStateTitle" />
+		</li>
+	      </ul>
+	    </div>
+	  </ul>
+	</div> 
+      </ul>
+    
+    </tal:main-macro>
+  </div>
+</body>
+</html>

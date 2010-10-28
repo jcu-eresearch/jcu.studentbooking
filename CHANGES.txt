@@ -1,0 +1,106 @@
+Changelog
+=========
+
+1.4.7 - 2010-03-02
+------------------
+
+* Split data into more columns for .csv export as requested by Michelle.
+
+1.4.6 - 2010-02-09
+------------------
+
+* Fix signing up for time slots whose labels have parentheses in them.
+
+1.4.5 - 2010-01-22
+------------------
+
+* Allow html tags in contact info for mailto tags
+* Make meta type match up with what Plone is expecting, fixes reording of Signup Sheets in folders.
+
+1.4.4 - 2010-01-22
+------------------
+
+* A few ui changes that Michelle requested.
+
+1.4.3 - 2010-01-14
+------------------
+
+* Added "uwosh.timeslot: ScheduleManager" role so that users do not
+  need to be Managers to add/edit signup sheets.
+
+1.4.2 - 2010-01-13
+------------------
+
+* Fixed the check for whether or not a user is logged in
+
+1.4.1 - 2010-01-07
+------------------
+
+* Fixed a date bug in the tests. They should now work until 2015.
+* Fixed a bug caused by using absolute_url_path().
+
+1.4 - 2009-07-27
+----------------
+
+* Made Brian's requested UI improvements
+* Removed nested signupsheets, functionality is replaced by a Time Slot name property
+* Some small refactoring/optmization improvements
+
+1.3.1 - 2009-06-08
+------------------
+
+* Fixed inlining of <dl> signup sheets.
+
+1.3 - 2009-06-08
+----------------
+
+* Fixed url pointing to wrong sheet when nested sheets are used
+* Fixed bumping up next user when space opens up in waiting-listed sheet
+
+1.3beta - 2009-06-08
+--------------------
+
+* Added multiple selection of slots
+* Added extra email content field
+* Improved signup results page
+* Improved child/parent signup sheet behavior 
+* Increased test suite coverage
+* Major code refactoring
+* Several minor bugs fixed
+
+1.2.2 - 2009-05-20
+------------------
+
+* All html validates now.
+
+1.2.1 - 2009-05-20
+------------------
+
+* Removed useless ScheduleManager role
+* Prefixed 'Can view schedule' with 'uwosh.timeslot:' on sharing tab
+* Added some more tests
+
+1.2 - 2009-05-19
+----------------
+
+* Final release
+
+1.2beta - 2009-05-19
+--------------------
+
+* Beta release
+
+1.1 - 2009-05-11
+----------------
+
+* Many improvements
+
+1.01 - 2009-04-22
+-----------------
+
+* Bug fix release
+
+1.0 - 2009-04-10
+----------------
+
+* Initial release

@@ -1,0 +1,62 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    i18n_domain="uwosh.timeslot">
+
+    <!-- configure your content components here -->
+
+    <!-- -*- extra stuff goes here -*- -->
+    <class class=".person.Person">
+
+        <require
+            permission="zope2.View"
+            interface="..interfaces.IPerson"
+            />
+
+        <require
+            permission="cmf.ModifyPortalContent"
+            set_schema="..interfaces.IPerson"
+            />
+
+    </class>
+    <class class=".timeslot.TimeSlot">
+
+        <require
+            permission="zope2.View"
+            interface="..interfaces.ITimeSlot"
+            />
+
+        <require
+            permission="cmf.ModifyPortalContent"
+            set_schema="..interfaces.ITimeSlot"
+            />
+
+    </class>
+    <class class=".day.Day">
+
+        <require
+            permission="zope2.View"
+            interface="..interfaces.IDay"
+            />
+
+        <require
+            permission="cmf.ModifyPortalContent"
+            set_schema="..interfaces.IDay"
+            />
+
+    </class>
+    <class class=".signupsheet.SignupSheet">
+
+        <require
+            permission="zope2.View"
+            interface="..interfaces.ISignupSheet"
+            />
+
+        <require
+            permission="cmf.ModifyPortalContent"
+            set_schema="..interfaces.ISignupSheet"
+            />
+
+    </class>
+
+</configure>
