@@ -2,7 +2,17 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="uwosh.timeslot">
+
+    <include package="collective.monkeypatcher" />
+
+    <monkey:patch
+        description="This makes validating required Achetypes fields simpler."
+        class="Products.Archetypes.Field.Field"
+        original="validate_required"
+        replacement=".validators.patched_validate_required"
+        />
 
     <!-- Enable our custom permissions -->
     <permission

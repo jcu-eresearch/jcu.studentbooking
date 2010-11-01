@@ -13,6 +13,8 @@ import csv
 from StringIO import StringIO
 from DateTime import DateTime
 
+from uwosh.timeslot.content.person import ExposedPersonSchema 
+
 SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
     atapi.BooleanField('allowSignupForMultipleSlots',
@@ -27,6 +29,7 @@ SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
                                    description=_(u'Whether or not to show individual slot names.'))
     ),
 
+    #This field exists for legacy reasons from original product.
     atapi.LinesField('extraFields',
         storage=atapi.AnnotationStorage(),
         vocabulary=[('phone','Phone'), ('department','Department'), ('classification','Employee Classification')],
@@ -60,6 +63,7 @@ SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 SignupSheetSchema['title'].storage = atapi.AnnotationStorage()
 SignupSheetSchema['description'].storage = atapi.AnnotationStorage()
 SignupSheetSchema['description'].widget.visible = {'view':'invisible', 'edit':'invisible'}
+SignupSheetSchema['extraFields'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 
 schemata.finalizeATCTSchema(SignupSheetSchema, folderish=True, moveDiscussion=False)
 
@@ -76,6 +80,14 @@ class SignupSheet(folder.ATFolder):
     extraEmailContent = atapi.ATFieldProperty('extraEmailContent')
     allowSignupForMultipleSlots = atapi.ATFieldProperty('allowSignupForMultipleSlots')
     showSlotNames = atapi.ATFieldProperty('showSlotNames')
+
+    #KSS validation workaround since we're exposing a separate schema here publically
+    def getField(self, key, wrapped=False):
+        field = super(SignupSheet, self).getField(key)
+        if not field:
+            field = ExposedPersonSchema.get(key)
+            field.writeable = lambda context: True
+        return field
 
     def getDay(self, date):
         clean_date = '"' + date + '"'

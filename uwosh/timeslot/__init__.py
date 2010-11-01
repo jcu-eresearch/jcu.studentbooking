@@ -9,6 +9,10 @@ from Products.CMFCore import utils
 from Products.CMFCore.permissions import setDefaultRoles
 
 
+from Products.validation import validation
+from uwosh.timeslot.validators import sanerValidators
+for sanerValidator in sanerValidators:
+    validation.register(sanerValidator)
 
 # Define a message factory for when this product is internationalised.
 # This will be imported with the special name "_" in most modules. Strings

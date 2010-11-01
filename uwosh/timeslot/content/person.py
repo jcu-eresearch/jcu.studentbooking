@@ -14,45 +14,66 @@ ExposedPersonSchema = atapi.Schema((
 
     atapi.StringField('daytimeContactNumber',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Daytime Contact Number'),),
+        required=True,
+        widget=atapi.StringWidget(label=_(u'Daytime Contact Number'),
+                                  description=_(u'Enter your daytime contact number we can reach you on.')), 
+        validators = ('saneIsPhoneNumber')
     ),
 
     atapi.StringField('mobilePhoneNumber',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Mobile Phone Number'),),
+        required=True,
+        widget=atapi.StringWidget(label=_(u'Mobile Phone Number'),
+                                  description=_(u'Enter your mobile phone number.')), 
+        validators = ('saneIsPhoneNumber')
     ),
 
     atapi.StringField('personalEmail',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Pesonal E-Mail'),
-                                  description=_(u'Your personal email address.  We will contact you on both your personal and JCU email addresses.')),
-        validators = ('isEmail')
+        required=True,
+        widget=atapi.StringWidget(label=_(u'Personal E-Mail'),
+                                  description=_(u'Your personal email address.  We will send you notifications to both your personal and JCU email addresses.')),
+        validators = ('saneIsEmail')
     ),
 
     atapi.StringField('confirmPersonalEmail',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Confirm Pesonal E-Mail'),),
-        validators = ('isEmail')
+        required=True,
+        widget=atapi.StringWidget(label=_(u'Confirm Personal E-Mail'),),
+                                  description=_(u'Re-enter your email address to avoid typing errors.'),
+        validators = ('saneIsEmail')
     ),
 
-    atapi.BooleanField('chosenAllSubjects',
+    atapi.StringField('chosenAllSubjects',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.BooleanWidget(label=_(u'Have you chosen all the subjects you want to study this year yet?'),),
+        required=True,
+        vocabulary=[('1', 'Yes'), ('0', 'No')],
+        enforceVocabulary=True,
+        widget=atapi.SelectionWidget(label=_(u'Have you chosen all the subjects you want to study this year yet?'),),
     ),
 
     atapi.BooleanField('difficultyWithEStudent',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.BooleanWidget(label=_(u'Have you had difficulty trying to enrol through eStudent?'),),
+        required=True,
+        vocabulary=[('1', 'Yes'), ('0', 'No')],
+        enforceVocabulary=True,
+        widget=atapi.SelectionWidget(label=_(u'Have you had difficulty trying to enrol through eStudent?'),),
     ),
 
     atapi.BooleanField('intendToApplyForAdvancedStanding',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.BooleanWidget(label=_(u'Do you intend to apply for Advanced Standing (credit for previous studies)?'),),
+        required=True,
+        vocabulary=[('1', 'Yes'), ('0', 'No')],
+        enforceVocabulary=True,
+        widget=atapi.SelectionWidget(label=_(u'Do you intend to apply for Advanced Standing (credit for previous studies)?'),),
     ),
 
     atapi.BooleanField('submittedApplicationForAdvancedStanding',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.BooleanWidget(label=_(u'Have you submitted your Application for Advanced Standing and supporting documents?'),),
+        required=True,
+        vocabulary=[('1', 'Yes'), ('0', 'No')],
+        enforceVocabulary=True,
+        widget=atapi.SelectionWidget(label=_(u'Have you submitted your Application for Advanced Standing and supporting documents?'),),
     ),
 
 ))

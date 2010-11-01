@@ -9,11 +9,12 @@
                     tal:define="allowSignupForMultipleSlots context/getAllowSignupForMultipleSlots;
                                 showSlotNames context/showSlotNames;
                                 showEditLinks view/showEditLinks;
-                                columns python:5+(showEditLinks and 1 or 0);">
+                                columns python:5+(showEditLinks and 1 or 0);
+                                errors view/errors;">
       
       <h2 tal:content="context/Title" />
  
-      <div style="font-size: 115%;" tal:condition="not:view/isCurrentUserLoggedIn">
+      <div tal:condition="not:view/isCurrentUserLoggedIn">
 	<strong>To signup for a spot you will need to
 	<a tal:attributes="href string:${context/absolute_url}/login_form?came_from=${context/absolute_url}/@@choose-timeslot-view">
 	login</a> first.</strong>
@@ -27,9 +28,13 @@
            tal:content="structure context/contactInfo">Contact info as HTML
       </div>
 		
-      <form method="post" tal:attributes="action string:${context/absolute_url}/@@submit-user-selection;">
+      <form method="post" tal:attributes="action string:${context/absolute_url};">
+       <div id="archetypes-fieldname-slotSelection" class="field"
+            tal:attributes="class python:'field'+('slotSelection' in errors and ' error' or '');">
+          <span></span><div class="fieldErrorBox"
+                            tal:content="python: 'slotSelection' in errors and errors['slotSelection'] or ''"> </div>
         <table class="plain" tal:define="days context/getDays"
-               style="width: 100%;">
+               style="width: 100%; background-color: white;">
 	  
 	  <tr tal:condition="not:days" style="background-color: #F0F0F0">
 	    <th style="border: none">
@@ -37,18 +42,6 @@
 	    </th>
 	  </tr>
 
-	  <tal:block tal:repeat="day days">
-	    <tr style="background-color: #F0F0F0">
-	      <th colspan="5" style="text-align: left; border: none"
-                  tal:attributes="colspan columns;">
-		<h4 style="float: left" tal:content="day/Title" />
-	        <span style="float: left" tal:condition="showEditLinks">
-		  &nbsp;<a tal:attributes="href string:${day/absolute_url}/edit">Edit</a>
-		  &nbsp;<a tal:attributes="href string:${day/absolute_url}/createObject?type_name=Time+Slot">Add session</a>
-	        </span>
-	      </th>
-	    </tr>
-		  
 	    <tr>
 	      <th tal:condition="showSlotNames" style="width: 40%;">Name</th>
 	      <th>Time</th>
@@ -57,6 +50,21 @@
 	      <th>Select</th>
 	      <th tal:condition="showEditLinks">Admin</th>
 	    </tr>
+
+	  <tal:block tal:repeat="day days">
+	    <tr style="background-color: #F0F0F0">
+	      <td colspan="5" style="text-align: left; border: none"
+                  tal:attributes="colspan columns;">
+		<h4 style="float: left; margin:0 0.5em 0 0;" tal:content="day/Title" />
+	        <div style="float: left;" tal:condition="showEditLinks">
+		  <a tal:attributes="href string:${day/absolute_url}">View</a>
+		  &nbsp;<a tal:attributes="href string:${day/absolute_url}/edit">Edit</a>
+		  &nbsp;<a tal:attributes="href string:${day/absolute_url}/@@clone">Clone</a>
+		  &nbsp;<a tal:attributes="href string:${day/absolute_url}/createObject?type_name=Time+Slot">Add session</a>
+	        </div>
+	      </td>
+	    </tr>
+		  
 	    
 	    <tal:block tal:define="timeSlots day/getTimeSlots">
 	      <tr tal:condition="not:timeSlots">
@@ -90,9 +98,11 @@
 		  <tal:block tal:condition="not:userAlreadySignedup">
 		    <tal:block tal:condition="not:full">
 		      <input tal:condition="allowSignupForMultipleSlots" type="checkbox" name="slotSelection"
-		             tal:attributes="value timeSlot/getLabel" />
+		             tal:attributes="value timeSlot/UID;
+                                             checked python:view.checkTimeSlot(timeSlot);" />
 		      <input tal:condition="not:allowSignupForMultipleSlots" type="radio" name="slotSelection"
-		      	     tal:attributes="value timeSlot/getLabel" />
+		      	     tal:attributes="value timeSlot/UID;
+                                             checked python:view.checkTimeSlot(timeSlot);" />
 		    </tal:block>
 		    <span tal:condition="full">Full</span>
 		  </tal:block>
@@ -108,37 +118,19 @@
 	    </tal:block>
 	  </tal:block>
 	</table>
+       </div>
 			   
-        <div tal:condition="view/areAnyExtraFieldsRequired" id="extraInfo">
-	  <br />
-	  <h3>Required Extra Information</h3>
-	  
-	  <div tal:condition="python: view.isFieldRequired('phone')" class="field">
-	    <label for="phone">Campus Phone</label>
-	    <span class="fieldRequired" title="Required">  (Required) </span><br />
-	    <input type="text" id="phone" name="phone" />
-	  </div>
-	  
-	  <div tal:condition="python: view.isFieldRequired('classification')" class="field">
-	    <label for="classification">Employee Classification Type</label>
-	    <span class="fieldRequired" title="Required">  (Required) </span><br />
-	    <select id="classification" size="1" name="classification">
-	      <option value="" />
-	      <option value="Academic">Academic Staff</option>
-	      <option value="Classified">Classified Staff</option>
-	      <option value="Faculty">Faculty</option>
-	      <option value="LTE">Limited Term Employee</option>
-	      <option value="Other">Other</option>
-	      <option value="Spouse - Faculty">Spouse - Faculty</option>
-	      <option value="Student">Student</option>
-	    </select>
-	  </div>
-       
-	  <div tal:condition="python: view.isFieldRequired('department')" class="field">
-	    <label for="department">Department</label>
-	    <span class="fieldRequired" title="Required">  (Required) </span><br />
-	    <input type="text" id="department" name="department" />
-	  </div>
+        <div id="extraInfo">
+	  <h3>Required Information</h3>
+          <div class="formHelp">Enter the following information to proceed to book your session. All fields marked <span title="Required" class="fieldRequired"></span> are required.</div>
+          <br />
+
+          <tal:fields tal:define="fields view/getExposedFields;">
+             <tal:field tal:repeat="field fields">
+                 <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit', field=field)" />
+             </tal:field>
+
+         </tal:fields>
 	  
 	</div>
 	  
