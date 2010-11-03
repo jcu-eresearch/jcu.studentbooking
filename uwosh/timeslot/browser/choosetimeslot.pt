@@ -3,36 +3,104 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="uwosh.timeslot">
 
+<head>
+
+    <metal:styles fill-slot="style_slot">
+	<style type="text/css">
+            #archetypes-fieldname-submittedApplicationForAdvancedStanding {
+               display:none;
+               margin-left: 1.5em;
+            }
+            span.room-number {
+               cursor: pointer;
+            }
+        </style>
+    </metal:styles>
+
+    <metal:javascript fill-slot="javascript_head_slot">
+         <script type="text/javascript">
+           jq(document).ready(function() {
+
+              jq("input[name='submittedApplicationForAdvancedStanding']").attr('disabled','disabled');
+
+              jq("input[name='intendToApplyForAdvancedStanding']").click(function() { 
+		   if (this.value == 1) { 
+                       jq("input[name='submittedApplicationForAdvancedStanding']").enable();
+		       jq('#archetypes-fieldname-submittedApplicationForAdvancedStanding').fadeIn();
+		   } else {
+                       jq("input[name='submittedApplicationForAdvancedStanding']").attr('disabled','disabled');
+		       jq('#archetypes-fieldname-submittedApplicationForAdvancedStanding').fadeOut();
+              
+		   }
+	      });
+ 
+              asField = jq("#intendToApplyForAdvancedStanding_1");
+              if (asField.attr('checked')) {
+                  asField.click();
+              }
+ 
+              jq("input[name='slotSelection']").click(function() { 
+   			jq("input[name='slotSelection']").parents('div.field tr').css('background-color',null);
+		        jq(this).parents('div.field tr').css('background-color','#cef');
+	      });
+
+              //jq("input[name='slotSelection']").parents('div.field tr').click(function() {
+	//	children = jq(this).children("input[name='slotSelection']");
+	//	if (children.length > 0) {
+	//	   children.click();
+	//	}	
+	  //    });
+
+           });
+         </script>
+    </metal:javascript>
+</head>
+
 <body>
   <div metal:fill-slot="main">
     <tal:main-macro metal:define-macro="main"
                     tal:define="allowSignupForMultipleSlots context/getAllowSignupForMultipleSlots;
                                 showSlotNames context/showSlotNames;
                                 showEditLinks view/showEditLinks;
-                                columns python:5+(showEditLinks and 1 or 0);
+                                showInputFields view/showInputFields;
+                                isBookingStaff view/isBookingStaff;
+                                columns python:5;
                                 errors view/errors;">
       
-      <h2 tal:content="context/Title" />
- 
-      <div tal:condition="not:view/isCurrentUserLoggedIn">
-	<strong>To signup for a spot you will need to
-	<a tal:attributes="href string:${context/absolute_url}/login_form?came_from=${context/absolute_url}/@@choose-timeslot-view">
-	login</a> first.</strong>
-      </div>
+	<dl class="collapsible collapsedOnLoad">
+	    <dt class="collapsibleHeader">
+	      Debug 
+	    </dt>
+	    <dd class="collapsibleContent">
+              <div tal:content="view/student_details">asfd</div>
+	    </dd>
+	 </dl>
 
+      <h2><span tal:replace="context/Title">Book a session</span> 
+             <tal:no-nonfaculty 
+                  condition="python: view.faculty_name != 'Non-faculty'">- <span tal:replace="view/faculty_name">Faculty of Law, Business and the Creative Arts</span>
+             </tal:no-nonfaculty>
+     </h2>
+ 
       <ul>
-	<li><a tal:attributes="href string:${context/absolute_url}/@@show-reservations">View my existing bookings</a></li>
+	<li><a tal:attributes="href string:${context/absolute_url}/@@show-reservations">View existing bookings</a></li>
+	<li><a tal:omit-tag="isBookingStaff"
+               tal:attributes="href string:${context/absolute_url}/@@select-course">Select another course</a></li>
+	<li tal:condition="isBookingStaff"><a tal:attributes="href string:${context/absolute_url}/@@book-user">Book a user in</a></li>
       </ul>
 
       <div tal:condition="context/contactInfo" id="contactInfo"
            tal:content="structure context/contactInfo">Contact info as HTML
       </div>
+
 		
-      <form method="post" tal:attributes="action string:${context/absolute_url};">
+      <form method="post" 
+               tal:attributes="action string:${context/absolute_url};"
+               tal:define="selectionField string:slotSelection;">
        <div id="archetypes-fieldname-slotSelection" class="field"
-            tal:attributes="class python:'field'+('slotSelection' in errors and ' error' or '');">
+            tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
           <span></span><div class="fieldErrorBox"
-                            tal:content="python: 'slotSelection' in errors and errors['slotSelection'] or ''"> </div>
+                            tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>
         <table class="plain" tal:define="days context/getDays"
                style="width: 100%; background-color: white;">
 	  
@@ -47,7 +115,7 @@
 	      <th>Time</th>
 	      <th>Room/Location</th>
 	      <th>Available</th>
-	      <th>Select</th>
+	      <th tal:condition="showInputFields">Select</th>
 	      <th tal:condition="showEditLinks">Admin</th>
 	    </tr>
 
@@ -66,31 +134,34 @@
 	    </tr>
 		  
 	    
-	    <tal:block tal:define="timeSlots day/getTimeSlots">
+	    <tal:block tal:define="timeSlots python:day.getTimeSlots(view.faculty_code)">
 	      <tr tal:condition="not:timeSlots">
 		<td colspan="5" tal:attributes="colspan columns;">No sessions have been made available for this day yet.</td>
 	      </tr>
 	      <tr tal:repeat="timeSlot timeSlots"
                   tal:attributes="class timeSlot/getStyleClass;">
 		<td tal:condition="showSlotNames">
-		  <strong tal:content="timeSlot/name">Time Slot Name</strong>
+		  <strong tal:content="timeSlot/name">Session Name</strong>
 		</td>
 		<td>
 		  <span tal:content="timeSlot/getTimeRange" />
 		</td>
                 <td>
 		  <a href="#" class="link-plain" target="_blank" 
-                     tal:content="timeSlot/roomNumber"
-                     tal:attributes="title timeSlot/slotLocation; 
-                                     href string:http://www.jcu.edu.au/maps/townsville/interactive/?location=${timeSlot/roomNumber};">Room</a>
+                 tal:omit-tag="python: timeSlot.getCampusName()!='Townsville'"
+                 tal:attributes="href string:http://www.jcu.edu.au/maps/townsville/interactive/?location=${timeSlot/roomNumber};">
+                     <span class="room-number"
+                           tal:content="timeSlot/roomNumber"
+                           tal:attributes="title timeSlot/slotLocation;">Room</span></a>
                   (<span tal:replace="timeSlot/getCampusName">Campus</span>) 
                 </td>
 		<td>
 		  <span tal:content="timeSlot/getNumberOfAvailableSpots" />
-		  <span tal:condition="timeSlot/getAllowWaitingList"> + Waiting List</span>
 		</td>
-		<td style="text-align: center" tal:define="userAlreadySignedup timeSlot/isCurrentUserSignedUpForThisSlot;
-		                               full timeSlot/isFull">
+		<td style="text-align: center" 
+                    tal:condition="showInputFields" 
+                    tal:define="userAlreadySignedup timeSlot/isCurrentUserSignedUpForThisSlot;
+		                full timeSlot/isFull;">
 		  <tal:block tal:condition="userAlreadySignedup">
 		    <em><strong >&rarr; Your Slot &larr;</strong></em>
 		  </tal:block>
@@ -109,10 +180,8 @@
 	        </td>
                 <td tal:condition="showEditLinks">
                   <a tal:attributes="href timeSlot/absolute_url;">View</a>
-                  &nbsp;<a tal:condition="showEditLinks" 
-                           tal:attributes="href string:${timeSlot/absolute_url}/edit">Edit</a>
-                  &nbsp;<a tal:condition="showEditLinks" 
-                           tal:attributes="href string:${timeSlot/absolute_url}/@@clone">Clone</a>
+                  &nbsp;<a tal:attributes="href string:${timeSlot/absolute_url}/edit">Edit</a>
+                  &nbsp;<a tal:attributes="href string:${timeSlot/absolute_url}/@@clone">Clone</a>
                 </td>
 	      </tr>
 	    </tal:block>
@@ -120,9 +189,9 @@
 	</table>
        </div>
 			   
-        <div id="extraInfo">
+        <div id="extraInfo" tal:condition="showInputFields">
 	  <h3>Required Information</h3>
-          <div class="formHelp">Enter the following information to proceed to book your session. All fields marked <span title="Required" class="fieldRequired"></span> are required.</div>
+          <div class="formHelp">Enter the following information to proceed to book your session. All fields marked <span title="Required" class="fieldRequired">&nbsp;</span>are required.</div>
           <br />
 
           <tal:fields tal:define="fields view/getExposedFields;">
@@ -134,19 +203,12 @@
 	  
 	</div>
 	  
-	<div tal:condition="view/isCurrentUserLoggedIn">
+	<div tal:condition="showInputFields">
 	  <br />
 	  <input type="submit" name="form.button.submit" value="Submit" />
 	  <input type="hidden" name="form.submitted" value="1" />
 	  <input tal:attributes="value member" type="hidden" name="memberToAssign" />
 	</div>
-
-	<div style="font-size: 115%;" tal:condition="not:view/isCurrentUserLoggedIn">
-	  <br />
-	  <strong>To signup for a spot you will need to
-	  <a tal:attributes="href string:${context/absolute_url}/login_form?came_from=${context/absolute_url}/@@choose-timeslot-view">
-	  login</a> first.</strong>
-        </div>
       </form>
 
     </tal:main-macro>

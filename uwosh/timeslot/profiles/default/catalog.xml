@@ -13,7 +13,12 @@
   <indexed_attr value="getEndTime"/>
  </index>
 
+ <index name="getFaculty" meta_type="FieldIndex">
+  <indexed_attr value="getFaculty"/>
+ </index>
+
  <column value="getDate"/>
  <column value="getStartTime"/>
  <column value="getEndTime"/>
+ <column value="getFaculty"/>
 </object>

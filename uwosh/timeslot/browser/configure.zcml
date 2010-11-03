@@ -38,14 +38,33 @@
         permission="uwosh.timeslot.ManageSchedule"
         />
 	
-    <browser:page
+    <browser:pages
       for="..interfaces.ISignupSheet"
-      name="choose-timeslot-view"
       class=".choosetimeslot.ChooseTimeSlot"
-      template="choosetimeslot.pt"
       allowed_interface=".choosetimeslot.IChooseTimeSlot"
-      permission="zope2.View"
-      />
+      permission="zope2.View">
+
+      <browser:page 
+            name="select-course" 
+            attribute="selectCourse" />
+
+      <browser:page 
+            name="choose-timeslot-view"
+            template="choosetimeslot.pt" />
+
+      <browser:page
+            name="submit-form"
+            attribute="submitForm" />
+
+     </browser:pages>
+
+    <browser:page
+        for="..interfaces.ISignupSheet"
+        name="book-user"
+        class=".bookuser.BookUserForm"
+        permission="uwosh.timeslot.ManageSchedule"
+        template="bookuser.pt"
+        />
 
     <browser:page
       for="..interfaces.ISignupSheet"

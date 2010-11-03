@@ -45,9 +45,15 @@ class Day(folder.ATFolder):
     	else:
     	    return self.date.strftime('%A, %d %B %Y')
     
-    def getTimeSlots(self):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Time Slot', path=self.getPath(), depth=1,
-                                                               sort_on='getStartTime', sort_order='ascending')
+    def getTimeSlots(self, faculty_code=''):
+        brains = self.portal_catalog.unrestrictedSearchResults(
+                             portal_type='Time Slot',
+                             path=self.getPath(),
+                             depth=1,
+                             sort_on='getStartTime',
+                             sort_order='ascending',
+                             getFaculty=faculty_code,
+                             )
         timeSlots = [brain.getObject() for brain in brains]
         return timeSlots
         

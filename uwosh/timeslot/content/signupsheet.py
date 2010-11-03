@@ -86,7 +86,8 @@ class SignupSheet(folder.ATFolder):
         field = super(SignupSheet, self).getField(key)
         if not field:
             field = ExposedPersonSchema.get(key)
-            field.writeable = lambda context: True
+            #field.writeable = lambda context: True
+            #field.checkPermission = lambda mode, instance: True
         return field
 
     def getDay(self, date):

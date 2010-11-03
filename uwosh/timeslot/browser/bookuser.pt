@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="uwosh.timeslot">
+
+<body>
+  <div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+                    tal:define="errors view/errors;">
+      
+      <h2><span tal:replace="context/Title">Book a session</span> - book a user in</h2>
+
+      <form method="post" tal:attributes="action string:${view/absolute_url};"
+                          tal:define="selectionField string:studentIdSearch;">
+
+	 <div class="field" style="margin-bottom:0.5em;"
+             id="archetypes-fieldname-studentIdSearch"
+             tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
+          <span></span>
+          <label class="formQuestion" for="studentIdSearch">Student ID</label>
+          <span class="fieldRequired" title="Required">
+            (Required)
+          </span>
+          <div class="formHelp" id="studentIdSearch_help">Enter a student ID number you wish to search for.</div>
+          
+	  <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"></div>
+          <input type="text" name="studentIdSearch" class="firstToFocus" id="studentIdSearch" value="" size="30" maxlength="255" 
+                 tal:attributes="value view/student_id;
+                                 id selectionField;
+                                 name selectionField;" />
+         </div>
+
+
+        <div style="margin-bottom:1em;">
+	  <input type="submit" value="Search" name="form.button.submit" />
+	  <input type="hidden" value="1" name="form.submitted" />
+	</div>
+
+
+       <fieldset id="results" tal:condition="view/student_records">
+           <legend>Search results for student ID</legend>
+           <div class="formHelp" id="studentIdResults_help">Confirm the details you see are correct, and remember to log out from the system once you've finished managing the student's bookings.</div>
+           <dl>
+             <dt>Student Number</dt>
+             <dd tal:content="view/first_student_record/studentNumber"></dd>
+             <dt>Student Name</dt>
+             <dd tal:content="string:${view/first_student_record/studentGivenName} ${view/first_student_record/studentSurname}"></dd>
+             <dt>Courses Available</dt>
+             <dd>
+                <div class="discreet">You will be able to select which course to book for after this step.</div>
+                <ul tal:repeat="record view/student_records">
+                 <li><span tal:replace="record/courseCode">12345</span> - <span tal:replace="record/courseFullName">Bachelor of Information Technology</span> 
+                             (<span tal:replace="record/courseYear">2008</span>; 
+                              <span tal:replace="record/defaultCampus">TSV</span>)
+                 </li>
+                </ul>
+             </dd>
+
+           </dl>
+         
+	  <input type="hidden" value="1" name="form.input.studentNumber"
+             tal:attributes="value view/first_student_record/studentNumber" />
+	  <input type="submit" value="Book as this student" name="form.button.submit" />
+       </fieldset>
+
+      </form>
+
+       <div><p>If you believe any details are incorrect, please contact the Student Enquiry Centre on 1800 246 446.</p></div>
+
+    </tal:main-macro>
+  </div>
+</body>
+</html>

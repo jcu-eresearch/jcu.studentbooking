@@ -7,7 +7,7 @@ from Products.ATContentTypes.content import schemata
 
 from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import ITimeSlot, ICloneable
-from uwosh.timeslot.config import PROJECTNAME
+from uwosh.timeslot import config
 from uwosh.timeslot.widget import TimeWidget
 
 from DateTime import DateTime
@@ -132,21 +132,6 @@ class TimeSlot(folder.ATFolder):
     #Maintained from the original product
     allowWaitingList = atapi.ATFieldProperty('allowWaitingList')
 
-    #We may want to calculate these from an SQL call...
-    facultyList = atapi.DisplayList((
-            ("6100", "FLBCA"),
-            ("6200", "FMHMS"),
-            ("6600", "FSE"),
-            ("6700", "FAESS"),
-            ("6000", "Non-faculty"),
-    ))
-    campusList = atapi.DisplayList((
-            ("TSV", "Townsville"),
-            ("CNS", "Cairns"),
-            ("MKY", "Mackay"),
-            ("ISA", "Mt Isa"),
-            ("TIS", "Thursday Island"),
-    ))
 
 
     def Title(self):
@@ -203,17 +188,18 @@ class TimeSlot(folder.ATFolder):
 
     def getFacultyList(self):
         #Should this come from SMS?
-        return self.facultyList 
+        return config.FACULTY_LIST 
 
     def getCampusList(self):
         #Should this come from SMS?
-        return self.campusList
-
-    def getCampusName(self):
-        return self.campusList.getValue(self.campus)
+        return config.CAMPUS_LIST
 
     def getFacultyName(self):
-        return self.facultyList.getValue(self.faculty)
+        return self.getFacultyList().getValue(self.faculty)
+
+    def getCampusName(self):
+        return self.getCampusList().getValue(self.campus)
+
 
     def getStyleClass(self):
         #We need relevant classes to help our drop-downs distinguish faculty etc
@@ -223,4 +209,4 @@ class TimeSlot(folder.ATFolder):
                +' isfull-'+str(self.isFull())
         
 
-atapi.registerType(TimeSlot, PROJECTNAME)
+atapi.registerType(TimeSlot, config.PROJECTNAME)

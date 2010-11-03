@@ -9,20 +9,23 @@ from uwosh.timeslot.interfaces import IPerson
 from uwosh.timeslot.config import PROJECTNAME
 
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.permissions import View
 
 ExposedPersonSchema = atapi.Schema((
 
     atapi.StringField('daytimeContactNumber',
         storage=atapi.AnnotationStorage(),
         required=True,
+        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Daytime Contact Number'),
-                                  description=_(u'Enter your daytime contact number we can reach you on.')), 
+                                  description=_(u'Enter your daytime phone number.')), 
         validators = ('saneIsPhoneNumber')
     ),
 
     atapi.StringField('mobilePhoneNumber',
         storage=atapi.AnnotationStorage(),
-        required=True,
+        required=False,
+        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Mobile Phone Number'),
                                   description=_(u'Enter your mobile phone number.')), 
         validators = ('saneIsPhoneNumber')
@@ -30,39 +33,44 @@ ExposedPersonSchema = atapi.Schema((
 
     atapi.StringField('personalEmail',
         storage=atapi.AnnotationStorage(),
-        required=True,
+        required=False,
+        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Personal E-Mail'),
-                                  description=_(u'Your personal email address.  We will send you notifications to both your personal and JCU email addresses.')),
+                                  description=_(u'We will send confirmation and reminder emails to your JCU address, and your personal address if you enter it here.')),
         validators = ('saneIsEmail')
     ),
 
     atapi.StringField('confirmPersonalEmail',
         storage=atapi.AnnotationStorage(),
-        required=True,
+        required=False,
+        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Confirm Personal E-Mail'),),
                                   description=_(u'Re-enter your email address to avoid typing errors.'),
         validators = ('saneIsEmail')
     ),
 
-    atapi.StringField('chosenAllSubjects',
+    atapi.StringField('subjectInfo',
         storage=atapi.AnnotationStorage(),
         required=True,
+        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
-        widget=atapi.SelectionWidget(label=_(u'Have you chosen all the subjects you want to study this year yet?'),),
+        widget=atapi.SelectionWidget(label=_(u'Are you having difficulty choosing your subjects?'),),
     ),
 
     atapi.BooleanField('difficultyWithEStudent',
         storage=atapi.AnnotationStorage(),
         required=True,
+        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
-        widget=atapi.SelectionWidget(label=_(u'Have you had difficulty trying to enrol through eStudent?'),),
+        widget=atapi.SelectionWidget(label=_(u'Are you having difficulty enrolling through eStudent?'),),
     ),
 
     atapi.BooleanField('intendToApplyForAdvancedStanding',
         storage=atapi.AnnotationStorage(),
         required=True,
+        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
         widget=atapi.SelectionWidget(label=_(u'Do you intend to apply for Advanced Standing (credit for previous studies)?'),),
@@ -70,7 +78,8 @@ ExposedPersonSchema = atapi.Schema((
 
     atapi.BooleanField('submittedApplicationForAdvancedStanding',
         storage=atapi.AnnotationStorage(),
-        required=True,
+        required=False,
+        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
         widget=atapi.SelectionWidget(label=_(u'Have you submitted your Application for Advanced Standing and supporting documents?'),),
@@ -86,7 +95,17 @@ PersonSchema = schemata.ATContentTypeSchema.copy() + \
         widget=atapi.StringWidget(label=_(u'Student Number'),),
     ),
 
+    atapi.StringField('studentLoginId',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Student Login ID'),),
+    ),
+
     atapi.StringField('courseCode',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Course Code'),),
+    ),
+
+    atapi.StringField('courseYear',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Course Code'),),
     ),
@@ -119,6 +138,26 @@ PersonSchema = schemata.ATContentTypeSchema.copy() + \
         validators = ('isEmail')
     ),
 
+    atapi.StringField('isInternational',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'International Student'),),
+    ),
+
+    atapi.StringField('sanctions',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Sanctions'),),
+    ),
+
+    atapi.StringField('advancedStanding',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Advanced Standing'),),
+    ),
+
+    atapi.StringField('numberSubjectsEnrolled',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Number of Subjects Enrolled In'),),
+    ),
+
 
 
 ))
@@ -140,7 +179,9 @@ class Person(base.ATCTContent):
     title = atapi.ATFieldProperty('title')
 
     studentNumber = atapi.ATFieldProperty('studentNumber')
+    studentLoginId = atapi.ATFieldProperty('studentLoginId') 
     courseCode = atapi.ATFieldProperty('courseCode')
+    courseYear = atapi.ATFieldProperty('courseCode')
     abbrevCourseTitle = atapi.ATFieldProperty('abbrevCourseTitle')
     defaultCampus = atapi.ATFieldProperty('defaultCampus')
     studentSurname = atapi.ATFieldProperty('studentSurname')
@@ -150,10 +191,14 @@ class Person(base.ATCTContent):
     email = atapi.ATFieldProperty('email')
     personalEmail = atapi.ATFieldProperty('personalEmail')
     confirmPersonalEmail = atapi.ATFieldProperty('confirmPersonalEmail')
-    chosenAllSubjects = atapi.ATFieldProperty('chosenAllSubjects')
+    subjectInfo = atapi.ATFieldProperty('subjectInfo')
     difficultyWithEStudent = atapi.ATFieldProperty('difficultyWithEStudent')
     intendToApplyForAdvancedStanding = atapi.ATFieldProperty('intendToApplyForAdvancedStanding')
     submittedApplicationForAdvancedStanding = atapi.ATFieldProperty('submittedApplicationForAdvancedStanding')
+    isInternational = atapi.ATFieldProperty('isInternational')
+    sanctions = atapi.ATFieldProperty('sanctions')
+    advancedStanding = atapi.ATFieldProperty('advancedStanding')
+    numberSubjectsEnrolled = atapi.ATFieldProperty('numberSubjectsEnrolled')
 
     def Title(self):
         if self.studentGivenName is None or self.studentSurname is None:
@@ -168,15 +213,5 @@ class Person(base.ATCTContent):
     def getReviewStateTitle(self):
     	reviewState = self.getReviewState()
     	return self.portal_workflow.getTitleForStateOnType(reviewState, 'Person')
-    
-    def getExtraInfo(self):
-        extraInfo = []
-        if self.phone != '':
-            extraInfo.append('Phone: ' + self.phone)
-        if self.classification != '':
-            extraInfo.append('Class: ' + self.classification)
-        if self.department != '':
-            extraInfo.append('Dept: ' + self.department)
-        return ', '.join(extraInfo)
     
 atapi.registerType(Person, PROJECTNAME)
