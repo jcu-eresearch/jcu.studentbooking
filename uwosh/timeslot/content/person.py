@@ -16,7 +16,6 @@ ExposedPersonSchema = atapi.Schema((
     atapi.StringField('daytimeContactNumber',
         storage=atapi.AnnotationStorage(),
         required=True,
-        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Daytime Contact Number'),
                                   description=_(u'Enter your daytime phone number.')), 
         validators = ('saneIsPhoneNumber')
@@ -25,7 +24,6 @@ ExposedPersonSchema = atapi.Schema((
     atapi.StringField('mobilePhoneNumber',
         storage=atapi.AnnotationStorage(),
         required=False,
-        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Mobile Phone Number'),
                                   description=_(u'Enter your mobile phone number.')), 
         validators = ('saneIsPhoneNumber')
@@ -34,7 +32,6 @@ ExposedPersonSchema = atapi.Schema((
     atapi.StringField('personalEmail',
         storage=atapi.AnnotationStorage(),
         required=False,
-        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Personal E-Mail'),
                                   description=_(u'We will send confirmation and reminder emails to your JCU address, and your personal address if you enter it here.')),
         validators = ('saneIsEmail')
@@ -43,7 +40,6 @@ ExposedPersonSchema = atapi.Schema((
     atapi.StringField('confirmPersonalEmail',
         storage=atapi.AnnotationStorage(),
         required=False,
-        write_permission = View,
         widget=atapi.StringWidget(label=_(u'Confirm Personal E-Mail'),),
                                   description=_(u'Re-enter your email address to avoid typing errors.'),
         validators = ('saneIsEmail')
@@ -52,34 +48,30 @@ ExposedPersonSchema = atapi.Schema((
     atapi.StringField('subjectInfo',
         storage=atapi.AnnotationStorage(),
         required=True,
-        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
         widget=atapi.SelectionWidget(label=_(u'Are you having difficulty choosing your subjects?'),),
     ),
 
-    atapi.BooleanField('difficultyWithEStudent',
+    atapi.StringField('difficultyWithEStudent',
         storage=atapi.AnnotationStorage(),
         required=True,
-        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
         widget=atapi.SelectionWidget(label=_(u'Are you having difficulty enrolling through eStudent?'),),
     ),
 
-    atapi.BooleanField('intendToApplyForAdvancedStanding',
+    atapi.StringField('intendToApplyForAdvancedStanding',
         storage=atapi.AnnotationStorage(),
         required=True,
-        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
         widget=atapi.SelectionWidget(label=_(u'Do you intend to apply for Advanced Standing (credit for previous studies)?'),),
     ),
 
-    atapi.BooleanField('submittedApplicationForAdvancedStanding',
+    atapi.StringField('submittedApplicationForAdvancedStanding',
         storage=atapi.AnnotationStorage(),
         required=False,
-        write_permission = View,
         vocabulary=[('1', 'Yes'), ('0', 'No')],
         enforceVocabulary=True,
         widget=atapi.SelectionWidget(label=_(u'Have you submitted your Application for Advanced Standing and supporting documents?'),),
@@ -87,8 +79,7 @@ ExposedPersonSchema = atapi.Schema((
 
 ))
 
-PersonSchema = schemata.ATContentTypeSchema.copy() + \
-               ExposedPersonSchema + atapi.Schema((
+HiddenPersonSchema = atapi.Schema((
 
     atapi.StringField('studentNumber',
         storage=atapi.AnnotationStorage(),
@@ -105,9 +96,9 @@ PersonSchema = schemata.ATContentTypeSchema.copy() + \
         widget=atapi.StringWidget(label=_(u'Course Code'),),
     ),
 
-    atapi.StringField('courseYear',
+    atapi.IntegerField('courseYear',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Course Code'),),
+        widget=atapi.IntegerWidget(label=_(u'Course Year'),),
     ),
 
     atapi.StringField('abbrevCourseTitle',
@@ -153,14 +144,19 @@ PersonSchema = schemata.ATContentTypeSchema.copy() + \
         widget=atapi.StringWidget(label=_(u'Advanced Standing'),),
     ),
 
-    atapi.StringField('numberSubjectsEnrolled',
+    atapi.IntegerField('numberSubjectsEnrolled',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Number of Subjects Enrolled In'),),
+        widget=atapi.IntegerWidget(label=_(u'Number of Subjects Enrolled In'),),
     ),
 
 
 
 ))
+
+DummyExposedPersonSchema = ExposedPersonSchema.copy()
+OurPersonSchema = ExposedPersonSchema + HiddenPersonSchema
+PersonSchema = schemata.ATContentTypeSchema.copy() + \
+               OurPersonSchema
 
 PersonSchema['title'].required = False
 PersonSchema['title'].storage = atapi.AnnotationStorage()
@@ -169,6 +165,10 @@ PersonSchema['description'].storage = atapi.AnnotationStorage()
 PersonSchema['description'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 
 schemata.finalizeATCTSchema(PersonSchema, moveDiscussion=False)
+
+def addPerson(self, id, **kw):
+    o = Person(id, **kw)
+    self._setObject(id,o)
 
 class Person(base.ATCTContent):
     implements(IPerson)
@@ -181,7 +181,7 @@ class Person(base.ATCTContent):
     studentNumber = atapi.ATFieldProperty('studentNumber')
     studentLoginId = atapi.ATFieldProperty('studentLoginId') 
     courseCode = atapi.ATFieldProperty('courseCode')
-    courseYear = atapi.ATFieldProperty('courseCode')
+    courseYear = atapi.ATFieldProperty('courseYear')
     abbrevCourseTitle = atapi.ATFieldProperty('abbrevCourseTitle')
     defaultCampus = atapi.ATFieldProperty('defaultCampus')
     studentSurname = atapi.ATFieldProperty('studentSurname')
@@ -199,6 +199,13 @@ class Person(base.ATCTContent):
     sanctions = atapi.ATFieldProperty('sanctions')
     advancedStanding = atapi.ATFieldProperty('advancedStanding')
     numberSubjectsEnrolled = atapi.ATFieldProperty('numberSubjectsEnrolled')
+
+    def __init__(self, oid, **kwargs):
+        import ipdb; ipdb.set_trace()
+        for field in OurPersonSchema.keys():
+            setattr(self, field, kwargs.get(field))
+
+        super(Person, self).__init__(oid, **kwargs)
 
     def Title(self):
         if self.studentGivenName is None or self.studentSurname is None:

@@ -1,6 +1,8 @@
 from zope.interface import implements, Interface
 
+from zope.component import getMultiAdapter
 from Products.CMFCore.utils import getToolByName
+
 
 from uwosh.timeslot.browser.base import BaseBrowserView
 from uwosh.timeslot import timeslotMessageFactory as _
@@ -54,7 +56,3 @@ class BookUserForm(BaseBrowserView):
         #Otherwise, we fall through to the default page rendering 
         return super(BookUserForm,self).__call__(args, kwargs)
 
-    def isCurrentUserLoggedIn(self):
-        portal_membership = getToolByName(self, 'portal_membership')
-        member = portal_membership.getAuthenticatedMember()
-        return 'Authenticated' in member.getRoles()

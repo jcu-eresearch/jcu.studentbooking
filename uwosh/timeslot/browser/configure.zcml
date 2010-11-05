@@ -16,6 +16,15 @@
       />
 
     <browser:page
+        for="Products.Archetypes.interfaces.IBaseObject"
+        attribute="kssValidateField"
+        class="archetypes.kss.validation.ValidationView"
+        name="kssValidateField"
+        permission="zope2.View"
+        layer="jcu.theme.browser.interfaces.IThemeSpecific"
+        />
+
+    <browser:page
       for="..interfaces.ISignupSheet"
       name="manager-summary"
       template="managersummary.pt"
@@ -51,10 +60,6 @@
       <browser:page 
             name="choose-timeslot-view"
             template="choosetimeslot.pt" />
-
-      <browser:page
-            name="submit-form"
-            attribute="submitForm" />
 
      </browser:pages>
 

@@ -11,6 +11,7 @@ from uwosh.timeslot import config
 from uwosh.timeslot.widget import TimeWidget
 
 from DateTime import DateTime
+from Acquisition import aq_parent
 
 TimeSlotSpecialSchema = atapi.Schema((                    
 
@@ -171,6 +172,9 @@ class TimeSlot(folder.ATFolder):
     def isFull(self):
         return (self.getNumberOfAvailableSpots() == 0) # and not self.allowWaitingList)
 
+    def isInThePast(self):
+        return DateTime(aq_parent(self).getDate().Date()+' '+self.getStartTime().Time()).isPast()
+
     def getPeople(self):
         brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', path=self.getPath(), 
                                                                depth=1)
@@ -200,10 +204,22 @@ class TimeSlot(folder.ATFolder):
     def getCampusName(self):
         return self.getCampusList().getValue(self.campus)
 
+    def showRoomUrl(self):
+        return self.campus in ['TSV', 'CNS']
+
+    def roomUrl(self):
+        url = None
+        if self.campus == 'TSV':
+            url = 'http://www.jcu.edu.au/maps/townsville/interactive/?location='+self.roomNumber
+        elif self.campus == 'CNS':
+            url = 'http://www.jcu.edu.au/maps/idc/groups/public/documents/maps/jcuprd_049685.pdf'
+        return url
+            
 
     def getStyleClass(self):
         #We need relevant classes to help our drop-downs distinguish faculty etc
-        return 'campus-'+self.campus \
+        return 'timeslot' \
+               +' campus-'+self.campus \
                +' faculty-'+self.faculty \
                +' room-'+self.roomNumber \
                +' isfull-'+str(self.isFull())

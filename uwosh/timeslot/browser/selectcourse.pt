@@ -22,7 +22,7 @@
                           tal:attributes="action string:${view/absolute_url};"
                           tal:define="selectionField string:selectCourse;">
 
-	 <div class="field" style="margin-bottom:0.5em;"
+	 <div class="field" style="margin:1em 0; line-height:2em;"
               id="archetypes-fieldname-selectCourse" 
               tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
 	  <span></span>
@@ -35,12 +35,12 @@
                                       course_year course/courseYear;
                                       default_campus course/defaultCampus;
                                       id string:selectCourse-${repeat/course/index};
-                                      value python:course_code+'-'+str(course_year)+'-'+default_campus;
+                                      value python:view.buildCourseIdentifier(course);
                                       ">
 			<input class="noborder" type="radio" name="selectCourse" value="1" id="selectCourse_1" 
                                tal:attributes="id id;
                                                value value;
-                                               checked python:value==request.get(selectionField) or view.courseCount == 1;" />
+                                               checked python:value==request.form.get(selectionField) or view.courseCount == 1;" />
 
 			<label for="selectCourse_1" tal:attributes="for id;">
                             <span tal:replace="course_code">12345</span> - <span tal:replace="course/courseFullName">Bachelor of Information Technology</span> 
@@ -57,6 +57,7 @@
         <div style="margin-bottom:1em;">
 	  <input type="submit" value="Next" name="form.button.submit" />
 	  <input type="hidden" value="1" name="form.submitted" />
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
 	</div>
 
       </form>

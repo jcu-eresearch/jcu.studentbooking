@@ -1,16 +1,16 @@
 from zope.interface import implements, Interface
 
 from Products.Five import BrowserView
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
 from uwosh.timeslot import timeslotMessageFactory as _
+from uwosh.timeslot.browser.base import BaseBrowserView
 
 class IShowReservations(Interface):
     pass
 
 
-class ShowReservations(BrowserView):
+class ShowReservations(BaseBrowserView):
     implements(IShowReservations)
 
     pageTemplate = ZopeTwoPageTemplateFile('showreservations.pt')
@@ -25,7 +25,3 @@ class ShowReservations(BrowserView):
         else:
            self.request.response.redirect(self.context.absolute_url() + '/login_form?came_from=./@@show-reservations')
 
-    def isCurrentUserLoggedIn(self):
-        portal_membership = getToolByName(self, 'portal_membership')
-        member = portal_membership.getAuthenticatedMember()
-        return 'Authenticated' in member.getRoles()

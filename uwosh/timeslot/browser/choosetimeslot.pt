@@ -6,15 +6,21 @@
 <head>
 
     <metal:styles fill-slot="style_slot">
-	<style type="text/css">
-            #archetypes-fieldname-submittedApplicationForAdvancedStanding {
-               display:none;
-               margin-left: 1.5em;
-            }
-            span.room-number {
-               cursor: pointer;
-            }
-        </style>
+<style type="text/css">
+#archetypes-fieldname-submittedApplicationForAdvancedStanding {
+display:none;
+margin-left: 1.5em;
+}
+span.room-number {
+cursor: pointer;
+}
+tr.sessionSelected-True {
+background-color:#CEF;
+}
+tr.usersSession-True {
+background-color:#FEC;
+}
+</style>
     </metal:styles>
 
     <metal:javascript fill-slot="javascript_head_slot">
@@ -22,6 +28,7 @@
            jq(document).ready(function() {
 
               jq("input[name='submittedApplicationForAdvancedStanding']").attr('disabled','disabled');
+              jq("input[name='slotSelection']:checked").parents('div.field tr').css('background-color','#cef');
 
               jq("input[name='intendToApplyForAdvancedStanding']").click(function() { 
 		   if (this.value == 1) { 
@@ -38,18 +45,23 @@
               if (asField.attr('checked')) {
                   asField.click();
               }
- 
-              jq("input[name='slotSelection']").click(function() { 
-   			jq("input[name='slotSelection']").parents('div.field tr').css('background-color',null);
-		        jq(this).parents('div.field tr').css('background-color','#cef');
-	      });
 
-              //jq("input[name='slotSelection']").parents('div.field tr').click(function() {
-	//	children = jq(this).children("input[name='slotSelection']");
-	//	if (children.length > 0) {
-	//	   children.click();
-	//	}	
-	  //    });
+              jq("tr.timeslot").click(function() { 
+                  input = jq(this).find("input[name='slotSelection']")
+                  if (input.length > 0) {
+                          input.attr('checked','checked');
+      	                  jq("tr.sessionSelected-True").removeClass('sessionSelected-True');
+		          jq(this).addClass('sessionSelected-True');
+                  }
+              });
+
+              function changePage(to_id) {
+                        location.hash = 'contactInfo'; 
+                        jq('#fieldsetlegend-'+to_id).click();
+                        return false;
+              } 
+              jq('#nextPageButton').click( function() { return changePage('extraInfo'); });
+              jq('#previousPageButton').click( function() { return changePage('slotSelection'); });
 
            });
          </script>
@@ -64,10 +76,11 @@
                                 showEditLinks view/showEditLinks;
                                 showInputFields view/showInputFields;
                                 isBookingStaff view/isBookingStaff;
+                                student_details view/student_details;
                                 columns python:5;
                                 errors view/errors;">
       
-	<dl class="collapsible collapsedOnLoad">
+	<dl class="collapsible collapsedOnLoad" style="display: none;">
 	    <dt class="collapsibleHeader">
 	      Debug 
 	    </dt>
@@ -76,31 +89,43 @@
 	    </dd>
 	 </dl>
 
-      <h2><span tal:replace="context/Title">Book a session</span> 
+      <h2 style="margin: 1em 0;"><span tal:replace="context/Title">Book a session</span> 
              <tal:no-nonfaculty 
                   condition="python: view.faculty_name != 'Non-faculty'">- <span tal:replace="view/faculty_name">Faculty of Law, Business and the Creative Arts</span>
              </tal:no-nonfaculty>
      </h2>
- 
-      <ul>
-	<li><a tal:attributes="href string:${context/absolute_url}/@@show-reservations">View existing bookings</a></li>
-	<li><a tal:omit-tag="isBookingStaff"
-               tal:attributes="href string:${context/absolute_url}/@@select-course">Select another course</a></li>
-	<li tal:condition="isBookingStaff"><a tal:attributes="href string:${context/absolute_url}/@@book-user">Book a user in</a></li>
-      </ul>
-
       <div tal:condition="context/contactInfo" id="contactInfo"
            tal:content="structure context/contactInfo">Contact info as HTML
       </div>
 
+      <ul>
+	<li tal:condition="not:isBookingStaff">
+           <a tal:attributes="href string:${context/absolute_url}/@@show-reservations">Manage existing bookings</a></li>
+	<li tal:condition="not:isBookingStaff">
+           <a tal:attributes="href string:${context/absolute_url}/@@select-course">Select a different course</a></li>
+	<li tal:condition="isBookingStaff"><a tal:attributes="href string:${context/absolute_url}/@@book-user">Book a user in</a></li>
+      </ul>
+
 		
-      <form method="post" 
+      <form method="post" class="enableFormTabbing"
                tal:attributes="action string:${context/absolute_url};"
                tal:define="selectionField string:slotSelection;">
+
+    <fieldset id="fieldset-slotSelection">
+      <legend id="fieldsetlegend-slotSelection">Enrolment sessions</legend>
+
        <div id="archetypes-fieldname-slotSelection" class="field"
             tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
-          <span></span><div class="fieldErrorBox"
-                            tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>
+          
+          <label for="slotSelection" class="formQuestion">Enrolment session</label>
+          <span title="Required" class="fieldRequired">
+            (Required)
+          </span>
+          <div id="slotSelection_help" class="formHelp">Select the session that you would like to book into. <strong>Selected course:</strong>
+                   <span tal:replace="student_details/courseCode" /> - <span tal:replace="student_details/courseFullName" /> (<span tal:replace="student_details/courseYear" />; <span tal:replace="student_details/defaultCampus" />)
+          </div>
+          
+        <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>
         <table class="plain" tal:define="days context/getDays"
                style="width: 100%; background-color: white;">
 	  
@@ -114,7 +139,7 @@
 	      <th tal:condition="showSlotNames" style="width: 40%;">Name</th>
 	      <th>Time</th>
 	      <th>Room/Location</th>
-	      <th>Available</th>
+	      <th>Spaces Available</th>
 	      <th tal:condition="showInputFields">Select</th>
 	      <th tal:condition="showEditLinks">Admin</th>
 	    </tr>
@@ -138,18 +163,21 @@
 	      <tr tal:condition="not:timeSlots">
 		<td colspan="5" tal:attributes="colspan columns;">No sessions have been made available for this day yet.</td>
 	      </tr>
-	      <tr tal:repeat="timeSlot timeSlots"
-                  tal:attributes="class timeSlot/getStyleClass;">
+	     <tal:rows repeat="timeSlot timeSlots">
+	      <tr tal:define="isUserSignedUp timeSlot/isCurrentUserSignedUpForThisSlot;
+                              isChecked python:view.checkTimeSlot(timeSlot);"
+                  tal:attributes="class string:${timeSlot/getStyleClass} usersSession-${isUserSignedUp} sessionSelected-${isChecked};">
 		<td tal:condition="showSlotNames">
 		  <strong tal:content="timeSlot/name">Session Name</strong>
+		    <em tal:condition="timeSlot/isCurrentUserSignedUpForThisSlot"><strong>&rarr; Your session &larr;</strong></em>
 		</td>
 		<td>
 		  <span tal:content="timeSlot/getTimeRange" />
 		</td>
                 <td>
 		  <a href="#" class="link-plain" target="_blank" 
-                 tal:omit-tag="python: timeSlot.getCampusName()!='Townsville'"
-                 tal:attributes="href string:http://www.jcu.edu.au/maps/townsville/interactive/?location=${timeSlot/roomNumber};">
+                 tal:omit-tag="not:timeSlot/showRoomUrl"
+                 tal:attributes="href timeSlot/roomUrl">
                      <span class="room-number"
                            tal:content="timeSlot/roomNumber"
                            tal:attributes="title timeSlot/slotLocation;">Room</span></a>
@@ -158,25 +186,10 @@
 		<td>
 		  <span tal:content="timeSlot/getNumberOfAvailableSpots" />
 		</td>
-		<td style="text-align: center" 
-                    tal:condition="showInputFields" 
-                    tal:define="userAlreadySignedup timeSlot/isCurrentUserSignedUpForThisSlot;
-		                full timeSlot/isFull;">
-		  <tal:block tal:condition="userAlreadySignedup">
-		    <em><strong >&rarr; Your Slot &larr;</strong></em>
-		  </tal:block>
-		  
-		  <tal:block tal:condition="not:userAlreadySignedup">
-		    <tal:block tal:condition="not:full">
-		      <input tal:condition="allowSignupForMultipleSlots" type="checkbox" name="slotSelection"
-		             tal:attributes="value timeSlot/UID;
-                                             checked python:view.checkTimeSlot(timeSlot);" />
-		      <input tal:condition="not:allowSignupForMultipleSlots" type="radio" name="slotSelection"
-		      	     tal:attributes="value timeSlot/UID;
-                                             checked python:view.checkTimeSlot(timeSlot);" />
-		    </tal:block>
-		    <span tal:condition="full">Full</span>
-		  </tal:block>
+		<td style="text-align: center" tal:condition="showInputFields">
+		  <input type="radio" name="slotSelection"
+		         tal:attributes="value timeSlot/UID;
+                                       checked isChecked;" />
 	        </td>
                 <td tal:condition="showEditLinks">
                   <a tal:attributes="href timeSlot/absolute_url;">View</a>
@@ -184,13 +197,19 @@
                   &nbsp;<a tal:attributes="href string:${timeSlot/absolute_url}/@@clone">Clone</a>
                 </td>
 	      </tr>
+             </tal:rows>
 	    </tal:block>
 	  </tal:block>
 	</table>
        </div>
+
+       <input type="button" id="nextPageButton" value="Next page &rarr;" tal:condition="showInputFields" />
+     </fieldset>
+
+     <fieldset id="fieldset-extraInfo" tal:condition="showInputFields">
+        <legend id="fieldsetlegend-extraInfo">Your details</legend>
 			   
-        <div id="extraInfo" tal:condition="showInputFields">
-	  <h3>Required Information</h3>
+          <label class="formQuestion">Required information</label>
           <div class="formHelp">Enter the following information to proceed to book your session. All fields marked <span title="Required" class="fieldRequired">&nbsp;</span>are required.</div>
           <br />
 
@@ -200,15 +219,21 @@
              </tal:field>
 
          </tal:fields>
-	  
-	</div>
-	  
+
+       <input type="button" id="previousPageButton" value="&larr; Previous page" />
+    </fieldset>
+
 	<div tal:condition="showInputFields">
 	  <br />
-	  <input type="submit" name="form.button.submit" value="Submit" />
+          <label class="formQuestion">Complete your booking</label>
+          <div class="formHelp">Once you've selected a enrolment session and filled out your details on the second page, click 'Submit Form'.</div>
+	  <input type="submit" name="form.button.submit" value="Submit Form"
+                 id="submitButton" />
 	  <input type="hidden" name="form.submitted" value="1" />
 	  <input tal:attributes="value member" type="hidden" name="memberToAssign" />
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
 	</div>
+
       </form>
 
     </tal:main-macro>

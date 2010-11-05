@@ -1,4 +1,5 @@
 *.mo
+*.swp
 *.egg-info
 *.egg
 *.EGG

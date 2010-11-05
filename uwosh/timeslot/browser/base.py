@@ -1,9 +1,13 @@
 from Products.Five import BrowserView
 from plone.memoize import instance
-from Products.CMFCore.utils import getToolByName
 from uwosh.timeslot import config
 
 from z3c.sqlalchemy import getSAWrapper
+
+from zope.component import getMultiAdapter
+from Products.CMFCore.utils import getToolByName
+
+from AccessControl import Unauthorized
 
 
 class BaseBrowserView(BrowserView):
@@ -14,6 +18,15 @@ class BaseBrowserView(BrowserView):
     @property
     def absolute_url(self):
        return "%s/@@%s" % (self.context.absolute_url(), self.__name__)
+
+    @property
+    def logout_url(self):
+       plone_view = getMultiAdapter((self.context, self.request), name='plone')
+       return plone_view.navigationRootUrl()+'/logout'
+
+    def authenticateForm(self):
+       authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
+       if not authenticator.verify(): raise Unauthorized('Your form submission did not validate correctly.') 
 
     @instance.memoize
     def isCurrentUserLoggedIn(self):

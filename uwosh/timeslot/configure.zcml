@@ -14,6 +14,14 @@
         replacement=".validators.patched_validate_required"
         />
 
+    <monkey:patch
+        description="Fix silly mistake when validating KSS non-required fields"
+        class="Products.validation.validators.EmptyValidator.EmptyValidator"
+        original="__call__"
+        replacement=".patches.patched_EmptyValidator_call"
+        preserveOriginal="true"
+        />
+
     <!-- Enable our custom permissions -->
     <permission
       id="uwosh.timeslot.ManageSchedule"

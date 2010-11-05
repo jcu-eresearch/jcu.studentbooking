@@ -35,6 +35,9 @@
 	  <br />
 
 	  <input type="submit" name="cancelSlots" value="Cancel Selected Sessions" />
+          <a href="#" tal:attributes="href context/absolute_url;">Return to Booking Page</a>
+          <a href="#" tal:attributes="href view/logout_url;">Return to Step 4: Enrol</a>
+
 	</form>
       </div>
       

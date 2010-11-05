@@ -13,7 +13,7 @@ import csv
 from StringIO import StringIO
 from DateTime import DateTime
 
-from uwosh.timeslot.content.person import ExposedPersonSchema 
+from uwosh.timeslot.content.person import DummyExposedPersonSchema 
 
 SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
@@ -85,9 +85,9 @@ class SignupSheet(folder.ATFolder):
     def getField(self, key, wrapped=False):
         field = super(SignupSheet, self).getField(key)
         if not field:
-            field = ExposedPersonSchema.get(key)
-            #field.writeable = lambda context: True
-            #field.checkPermission = lambda mode, instance: True
+            field = DummyExposedPersonSchema.get(key)
+            field.writeable = lambda context: True
+            field.checkPermission = lambda mode, instance: True
         return field
 
     def getDay(self, date):
