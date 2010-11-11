@@ -5,24 +5,6 @@
 
 <head>
 
-    <metal:styles fill-slot="style_slot">
-<style type="text/css">
-#archetypes-fieldname-submittedApplicationForAdvancedStanding {
-display:none;
-margin-left: 1.5em;
-}
-span.room-number {
-cursor: pointer;
-}
-tr.sessionSelected-True {
-background-color:#CEF;
-}
-tr.usersSession-True {
-background-color:#FEC;
-}
-</style>
-    </metal:styles>
-
     <metal:javascript fill-slot="javascript_head_slot">
          <script type="text/javascript">
            jq(document).ready(function() {
@@ -50,8 +32,8 @@ background-color:#FEC;
                   input = jq(this).find("input[name='slotSelection']")
                   if (input.length > 0) {
                           input.attr('checked','checked');
-      	                  jq("tr.sessionSelected-True").removeClass('sessionSelected-True');
-		          jq(this).addClass('sessionSelected-True');
+      	                  jq("tr.session-selected-True").removeClass('session-selected-True');
+		          jq(this).addClass('session-selected-True');
                   }
               });
 
@@ -62,6 +44,35 @@ background-color:#FEC;
               } 
               jq('#nextPageButton').click( function() { return changePage('extraInfo'); });
               jq('#previousPageButton').click( function() { return changePage('slotSelection'); });
+
+
+              jq('a#ehs-select-course').prepOverlay({
+		    subtype:'ajax',
+		    filter: '#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+                    closeselector: 'a#return-to-booking',
+                    config:{mask:{color:'#000'}}
+		    });
+
+              jq('a#ehs-manage-bookings, a#ehs-admin-booking').prepOverlay({
+		    subtype:'ajax',
+		    filter: '#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+                    closeselector: 'a#return-to-booking',
+                    formselector: 'form[name="ehs-manage-bookings"],form[name="ehs-book-user"]',
+                    noform: 'reload',
+                    config:{mask:{color:'#000'},
+                            onBeforeClose:function(){
+                                             if (jq("div.overlay dl.portalMessage.info:contains('booking was cancelled')").length == 1) {
+                                                location.reload();
+                                             }
+                                          } 
+                           } 
+		    });
+
+              jq('#ehs-booking-results-link').prepOverlay({
+                    subtype:'inline',
+                    config:{expose:{color:'#000'}}
+              }).click();
+
 
            });
          </script>
@@ -77,10 +88,11 @@ background-color:#FEC;
                                 showInputFields view/showInputFields;
                                 isBookingStaff view/isBookingStaff;
                                 student_details view/student_details;
+                                booked_session view/getBookedSession;
                                 columns python:5;
                                 errors view/errors;">
       
-	<dl class="collapsible collapsedOnLoad" style="display: none;">
+	<dl class="collapsible collapsedOnLoad">
 	    <dt class="collapsibleHeader">
 	      Debug 
 	    </dt>
@@ -89,7 +101,49 @@ background-color:#FEC;
 	    </dd>
 	 </dl>
 
-      <h2 style="margin: 1em 0;"><span tal:replace="context/Title">Book a session</span> 
+      <div id="ehs-booking-results"
+           tal:condition="python:booked_session">
+       <a href="#ehs-booking-results" id="ehs-booking-results-link">&nbsp;</a>
+       <div class="close"><span>Close</span></div>
+       <div class="pb-ajax">  
+         <div>
+           <h2>Booking successful</h2>
+           <p>You have been successfully booked into the following Enrolment Help Session:</p>
+
+           <dl>
+             <dt>Time and date</dt>
+             <dd tal:content="booked_session/getTimeAndDate">01:00 pm - 02:30 pm, 20 September 2011</dd>
+             <dt>Session name</dt>
+             <dd tal:content="booked_session/name">All courses</dd>
+             <dt>Faculty</dt>
+             <dd tal:content="booked_session/getFacultyName">FSE</dd>
+             <dt>Location</dt>
+             <dd>
+		  <a href="#" class="link-plain" target="_blank" 
+                 tal:omit-tag="not:booked_session/showRoomUrl"
+                 tal:attributes="href booked_session/roomUrl">
+                     <span class="room-number"
+                           tal:content="booked_session/roomNumber">
+                           Room</span></a><tal:location condition="booked_session/slotLocation">, <span tal:replace="booked_session/slotLocation" /></tal:location>
+                  (<span tal:replace="booked_session/getCampusName">Campus</span>) 
+             </dd>
+           </dl>
+
+           <p>A confirmation email with these details, as well as what to bring, has been sent to you.</p>
+
+           <div>
+              <a href="#" class="close" id="return-to-booking"
+                 tal:attributes="href string:${context/absolute_url}">
+                  Return to booking page</a>
+              <a href="#" tal:attributes="href view/logout_url;">
+                  Return to Step 4: Enrol</a>
+           </div>
+
+         </div>
+       </div>
+      </div>
+
+      <h2 class="booking-page-title"><span tal:replace="context/Title">Book a session</span> 
              <tal:no-nonfaculty 
                   condition="python: view.faculty_name != 'Non-faculty'">- <span tal:replace="view/faculty_name">Faculty of Law, Business and the Creative Arts</span>
              </tal:no-nonfaculty>
@@ -100,10 +154,14 @@ background-color:#FEC;
 
       <ul>
 	<li tal:condition="not:isBookingStaff">
-           <a tal:attributes="href string:${context/absolute_url}/@@show-reservations">Manage existing bookings</a></li>
+           <a id="ehs-manage-bookings"
+              tal:attributes="href string:${context/absolute_url}/@@show-bookings">Manage existing bookings</a></li>
 	<li tal:condition="not:isBookingStaff">
-           <a tal:attributes="href string:${context/absolute_url}/@@select-course">Select a different course</a></li>
-	<li tal:condition="isBookingStaff"><a tal:attributes="href string:${context/absolute_url}/@@book-user">Book a user in</a></li>
+           <a id="ehs-select-course"
+              tal:attributes="href string:${context/absolute_url}/@@select-course">Select a different course</a></li>
+	<li tal:condition="isBookingStaff">
+           <a id="ehs-admin-booking"
+              tal:attributes="href string:${context/absolute_url}/@@book-user">Book a user in</a></li>
       </ul>
 
 		
@@ -117,11 +175,11 @@ background-color:#FEC;
        <div id="archetypes-fieldname-slotSelection" class="field"
             tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
           
-          <label for="slotSelection" class="formQuestion">Enrolment session</label>
-          <span title="Required" class="fieldRequired">
+          <label for="slotSelection" class="formQuestion">Enrolment sessions</label>
+          <span title="Required" class="fieldRequired" tal:condition="showInputFields">
             (Required)
           </span>
-          <div id="slotSelection_help" class="formHelp">Select the session that you would like to book into. <strong>Selected course:</strong>
+          <div id="slotSelection_help" class="formHelp" tal:condition="showInputFields">Select the session that you would like to book into. <strong>Selected course:</strong>
                    <span tal:replace="student_details/courseCode" /> - <span tal:replace="student_details/courseFullName" /> (<span tal:replace="student_details/courseYear" />; <span tal:replace="student_details/defaultCampus" />)
           </div>
           
@@ -161,12 +219,12 @@ background-color:#FEC;
 	    
 	    <tal:block tal:define="timeSlots python:day.getTimeSlots(view.faculty_code)">
 	      <tr tal:condition="not:timeSlots">
-		<td colspan="5" tal:attributes="colspan columns;">No sessions have been made available for this day yet.</td>
+		<td colspan="5" tal:attributes="colspan columns;">There are no sessions available on this date.</td>
 	      </tr>
 	     <tal:rows repeat="timeSlot timeSlots">
 	      <tr tal:define="isUserSignedUp timeSlot/isCurrentUserSignedUpForThisSlot;
                               isChecked python:view.checkTimeSlot(timeSlot);"
-                  tal:attributes="class string:${timeSlot/getStyleClass} usersSession-${isUserSignedUp} sessionSelected-${isChecked};">
+                  tal:attributes="class string:${timeSlot/getStyleClass} users-session-${isUserSignedUp} session-selected-${isChecked};">
 		<td tal:condition="showSlotNames">
 		  <strong tal:content="timeSlot/name">Session Name</strong>
 		    <em tal:condition="timeSlot/isCurrentUserSignedUpForThisSlot"><strong>&rarr; Your session &larr;</strong></em>
@@ -227,7 +285,7 @@ background-color:#FEC;
 	  <br />
           <label class="formQuestion">Complete your booking</label>
           <div class="formHelp">Once you've selected a enrolment session and filled out your details on the second page, click 'Submit Form'.</div>
-	  <input type="submit" name="form.button.submit" value="Submit Form"
+	  <input type="submit" name="form.button.Submit" value="Submit Form"
                  id="submitButton" />
 	  <input type="hidden" name="form.submitted" value="1" />
 	  <input tal:attributes="value member" type="hidden" name="memberToAssign" />
