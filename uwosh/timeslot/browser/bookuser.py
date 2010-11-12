@@ -25,24 +25,26 @@ class BookUserForm(BaseBrowserView):
         self.first_student_record = None
 
         if self.request.form.get('form.submitted') == '1':
+
+            self.authenticateForm()
             
             self.student_id = self.request.form.get('studentIdSearch')
 
-            if self.request.form.get('form.button.submit') == 'Search':
+            if self.request.form.get('form.button.Submit') == 'Search':
 
                 if self.student_id:
-                    self.student_records = self.queryStudentDetails(self.student_id, first=False, as_dict=True, use_student_id=True)
+                    self.student_records = self.queryStudentDetails(self.student_id, first=False, as_dict=True, search_student_id=True, search_login_id=True)
                     if self.student_records:
                         self.first_student_record = self.student_records[0]
                 
                 if not self.student_records:
-                    self.errors['studentIdSearch'] = "This student ID could not be found.  Please search for another."
+                    self.errors['studentIdSearch'] = "A student with this identifier could not be found.  Please search for another."
 
-            elif self.request.form.get('form.button.submit') == 'Book as this student':
+            elif self.request.form.get('form.button.Submit') == 'Book as this student':
                 #Check the selection is actually a student.  We wouldn't want
                 #the user attempting to su to an Administrator!
                 student_id = self.request.form.get('form.input.studentNumber')
-                student_records = self.queryStudentDetails(student_id, first=True, as_dict=True, use_student_id=True)
+                student_records = self.queryStudentDetails(student_id, first=True, as_dict=True, search_student_id=True, search_login_id=False)
 
                 if student_records and len(student_records) == 1:
                     #Become that user

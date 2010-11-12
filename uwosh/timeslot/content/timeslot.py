@@ -25,6 +25,7 @@ TimeSlotSpecialSchema = atapi.Schema((
     atapi.DateTimeField('endTime',
         storage=atapi.AnnotationStorage(),
         required=True,
+        validators = ('isEndTimeAfterStartTime',),
         widget=TimeWidget(label=_('End Time'),
                           show_ymd=False,
                           format='%I:%M %P')
@@ -109,7 +110,12 @@ TimeSlotSchema['description'].widget.visible = {'view':'invisible', 'edit':'invi
 TimeSlotSchema['description'].storage = atapi.AnnotationStorage()
 TimeSlotSchema['allowWaitingList'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 
+TimeSlotSchema['nextPreviousEnabled'].defaultMethod = True
+TimeSlotSchema['nextPreviousEnabled'].default_method = lambda: True
+TimeSlotSchema['nextPreviousEnabled'].default = True
+
 schemata.finalizeATCTSchema(TimeSlotSchema, folderish=True, moveDiscussion=False)
+
 
 class TimeSlot(folder.ATFolder):
     implements(ITimeSlot, ICloneable)
@@ -136,10 +142,11 @@ class TimeSlot(folder.ATFolder):
 
 
     def Title(self):
+        timerange = self.getTimeRange()
         if self.name != '':
-            return '%s: %s' % (self.name, self.getTimeRange())
-        elif self.getTimeRange() != '':
-            return self.getTimeRange()
+            return '%s (%s)' % (timerange,self.name)
+        elif timerange != '':
+            return timerange
         else:
             return self.id
 
@@ -149,9 +156,14 @@ class TimeSlot(folder.ATFolder):
         else:
             return '%s - %s' % (self.startTime.strftime('%I:%M %P'), self.endTime.strftime('%I:%M %P'))
 
+    def getDate(self):
+        return aq_parent(self).Title()
+
+    def getTimeAndDate(self):
+        return '%s: %s' % (self.getTimeRange(), self.getDate())
+
     def getLabel(self):
-        parentDay = self.aq_parent
-        return '%s @ %s' % (parentDay.Title(), self.Title())
+        return '%s (%s)' % (self.getTimeAndDate(), self.name)
 
     def getNumberOfAvailableSpots(self):
         brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', review_state='signedup', 
@@ -201,13 +213,17 @@ class TimeSlot(folder.ATFolder):
     def getFacultyName(self):
         return self.getFacultyList().getValue(self.faculty)
 
+    def getFacultyAbbreviation(self):
+        facultyName = self.getFacultyName()
+        return facultyName[facultyName.find('(')+1:facultyName.rfind(')')]
+
     def getCampusName(self):
         return self.getCampusList().getValue(self.campus)
 
     def showRoomUrl(self):
         return self.campus in ['TSV', 'CNS']
 
-    def roomUrl(self):
+    def getRoomUrl(self):
         url = None
         if self.campus == 'TSV':
             url = 'http://www.jcu.edu.au/maps/townsville/interactive/?location='+self.roomNumber

@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="uwosh.timeslot">
+
+<body>
+  <div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+               tal:define="bookedin context/isCurrentUserSignedUpForAnySlot;">
+      
+      <h2 class="booking-page-title"><span tal:replace="context/Title" /> - Manage your bookings</h2>
+      
+	<form method="post" name="ehs-manage-bookings"
+              tal:attributes="action string:${context/absolute_url}/@@cancel-reservation;">
+          <div class="documentContent">
+	    <tal:booked-in condition="bookedin">
+	        <p>To cancel your booking, select a session and click the "Cancel selected sessions" button.</p>
+  	        <p>You are signed up for the following sessions:</p>
+ 	        <ul class="visualNoMarker ehs-current-bookings-list">
+                   <tal:sessions tal:repeat="slot context/getSlotsCurrentUserIsSignedUpFor">
+                   <li>
+  		      <input type="checkbox" name="selectedSlot" tal:attributes="value slot/UID; id slot/UID;" />
+                      <label for="slot" tal:content="slot/getLabel"
+                             tal:attributes="for slot/UID;">Label</label>
+                   </li>
+ 	           </tal:sessions>
+	        </ul>
+            </tal:booked-in>
+            <tal:not-booked-in condition="not:bookedin">
+   	        <p>You are not booked into any upcoming sessions.</p>
+            </tal:not-booked-in>
+          </div>
+	      
+	<div class="ehs-buttons">
+          <input type="hidden" value="1" name="form.submitted" />
+          <input tal:condition="context/isCurrentUserSignedUpForAnySlot"
+                 type="submit" value="Cancel selected session" name="form.button.Submit" />
+	  <a href="#" tal:attributes="href string:${context/absolute_url}" id="return-to-booking">Return to booking page</a>
+          <a href="#" tal:attributes="href view/logout_url;">Return to Step 4: Enrol</a>
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
+        </div>
+
+	</form>
+      
+    </tal:main-macro>
+  </div>
+</body>
+</html>

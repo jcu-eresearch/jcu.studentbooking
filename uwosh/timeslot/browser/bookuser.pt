@@ -8,9 +8,10 @@
     <tal:main-macro metal:define-macro="main"
                     tal:define="errors view/errors;">
       
-      <h2><span tal:replace="context/Title">Book a session</span> - book a user in</h2>
+      <h2 class="booking-page-title"><span tal:replace="context/Title">Book a session</span> - Book a student in</h2>
 
-      <form method="post" tal:attributes="action string:${view/absolute_url};"
+      <form method="post" name="ehs-book-user"
+                          tal:attributes="action string:${view/absolute_url};"
                           tal:define="selectionField string:studentIdSearch;">
 
 	 <div class="field" style="margin-bottom:0.5em;"
@@ -21,7 +22,7 @@
           <span class="fieldRequired" title="Required">
             (Required)
           </span>
-          <div class="formHelp" id="studentIdSearch_help">Enter a student ID number you wish to search for.</div>
+          <div class="formHelp" id="studentIdSearch_help">Enter a student ID number you wish to search for and click the Search button.</div>
           
 	  <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"></div>
           <input type="text" name="studentIdSearch" class="firstToFocus" id="studentIdSearch" value="" size="30" maxlength="255" 
@@ -31,9 +32,12 @@
          </div>
 
 
-        <div style="margin-bottom:1em;">
-	  <input type="submit" value="Search" name="form.button.submit" />
+        <div class="ehs-buttons">
+	  <input type="submit" value="Search" name="form.button.Submit" />
 	  <input type="hidden" value="1" name="form.submitted" />
+          <a href="#" tal:attributes="href string:${context/absolute_url}" 
+                      id="return-to-booking">Return to booking page</a>
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
 	</div>
 
 
@@ -43,6 +47,8 @@
            <dl>
              <dt>Student Number</dt>
              <dd tal:content="view/first_student_record/studentNumber"></dd>
+             <dt>Student Login ID</dt>
+             <dd tal:content="view/first_student_record/studentLoginId"></dd>
              <dt>Student Name</dt>
              <dd tal:content="string:${view/first_student_record/studentGivenName} ${view/first_student_record/studentSurname}"></dd>
              <dt>Courses Available</dt>
@@ -57,10 +63,12 @@
              </dd>
 
            </dl>
-         
+        
+        <div class="ehs-buttons"> 
 	  <input type="hidden" value="1" name="form.input.studentNumber"
              tal:attributes="value view/first_student_record/studentNumber" />
-	  <input type="submit" value="Book as this student" name="form.button.submit" />
+	  <input type="submit" value="Book as this student" name="form.button.Submit" />
+        </div>
        </fieldset>
 
       </form>

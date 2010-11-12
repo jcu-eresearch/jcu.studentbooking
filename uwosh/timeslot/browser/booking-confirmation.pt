@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="uwosh.timeslot">
+
+<body>
+  <div metal:fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+                    tal:define="booked_session view/getBookedSessionChecked;">
+     
+     <tal:booking-session condition="python:booked_session">
+       <h2>Booking successful</h2>
+       <p>You have been successfully booked into the following Enrolment Help Session:</p>
+
+       <dl>
+         <dt>Time and date</dt>
+         <dd tal:content="booked_session/getTimeAndDate">01:00 pm - 02:30 pm, 20 September 2011</dd>
+         <dt>Session name</dt>
+         <dd tal:content="booked_session/name">All courses</dd>
+         <dt>Faculty</dt>
+         <dd tal:content="booked_session/getFacultyName">FSE</dd>
+         <dt>Location</dt>
+         <dd>
+           <a href="#" class="link-plain" target="_blank" 
+             tal:omit-tag="not:booked_session/showRoomUrl"
+             tal:attributes="href booked_session/getRoomUrl">
+                 <span class="room-number"
+                       tal:content="booked_session/roomNumber">
+                      Room</span></a><tal:location condition="booked_session/slotLocation">, <span tal:replace="booked_session/slotLocation" /></tal:location>
+             (<span tal:replace="booked_session/getCampusName">Campus</span>) 
+         </dd>
+       </dl>
+
+       <p>A confirmation email with these details, as well as what to bring, has been sent to you.</p>
+
+     </tal:booking-session>
+
+     <tal:no-booking-session condition="python:not booked_session">
+        <h2>Booking not found</h2>
+        <p>Your booking against the given help session could not be found.</p>
+        <p>You may have already removed yourself from this session separately</p>
+     </tal:no-booking-session>
+
+       <div class="ehs-buttons">
+          <a href="#" id="return-to-booking"
+             tal:attributes="href string:${context/absolute_url}">
+              Return to booking page</a>
+          <a href="#" tal:attributes="href view/logout_url;">
+              Return to Step 4: Enrol</a>
+       </div>
+
+    </tal:main-macro>
+  </div>
+</body>
+</html>

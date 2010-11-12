@@ -1,18 +1,17 @@
-from zope.interface import implements, Interface
-
-from uwosh.timeslot.browser.base import BaseBrowserView
-from zope.component import getMultiAdapter
-from Products.CMFCore.utils import getToolByName
 from AccessControl import Unauthorized
+from Acquisition import aq_inner
 
+from zope.component import getMultiAdapter
+from zope.interface import implements, Interface
 from plone.memoize import instance
-
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFCore.utils import getToolByName
 
 from uwosh.timeslot import timeslotMessageFactory as _
-from uwosh.timeslot import config
-from uwosh.timeslot.util import explodeCourseIdentifier
+from uwosh.timeslot import config, mail
+from uwosh.timeslot.browser.base import BaseBrowserView
 from uwosh.timeslot.content.person import ExposedPersonSchema, DummyExposedPersonSchema
+from uwosh.timeslot.util import explodeCourseIdentifier
 
 class IChooseTimeSlot(Interface):
     pass
@@ -29,8 +28,8 @@ class ChooseTimeSlot(BaseBrowserView):
     def __call__(self, *args, **kwargs):
         #Recall our user's course selection from their session.
         plone_utils = getToolByName(self.context, 'plone_utils')
-        session = self.getSdmSession()
-        self.student_details = session.get(config.EHS_BOOKING_COURSE_IDENTIFIER)
+        self.student_details = self.getStudentDetailsFromSdm()
+        self.booked_session_uid = None
 
         member = self.getAuthenticatedMember()
 
@@ -42,7 +41,7 @@ class ChooseTimeSlot(BaseBrowserView):
 
         #When submitting our form, do the following for validation/processing
         if self.request.form.get('form.submitted') == '1' and \
-           self.request.form.get('form.button.submit') == 'Submit Form':
+           self.request.form.get('form.button.Submit') == 'Submit Form':
 
            self.authenticateForm()
 
@@ -65,13 +64,11 @@ class ChooseTimeSlot(BaseBrowserView):
            if not timeSlotUid or len(timeSlotUid) != 1:
                self.errors['slotSelection'] = "Please select one enrolment session to book into."
            else:           
-               ref_catalog = getToolByName(self.context, 'reference_catalog')
-               timeSlot = ref_catalog.lookupObject(timeSlotUid[0])
+               timeSlot = self.getBookingSessionByUid(timeSlotUid[0])
 
                #XXX Need more checks here to make sure the student
                #can sign up for the given slot...
                if not timeSlot \
-                  or timeSlot.getPortalTypeName() != 'Time Slot' \
                   or timeSlot.isFull() \
                   or timeSlot.isInThePast() \
                   or timeSlot.getFaculty() != self.student_details['facultyCode'] \
@@ -86,8 +83,20 @@ class ChooseTimeSlot(BaseBrowserView):
                    #responses included.
                    self.student_details.update(self.request.form)
                    person = timeSlot.invokeFactory('Person', self.student_details['studentLoginId'], **self.student_details)
+
+                   try: 
+                       #EMAIL: Send confirmation email to our user
+                       mail.sendNotificationEmail(context=self.context,
+                                      person=timeSlot[person],
+                                      request=self.request,
+                                      email_type=config.EHS_CONFIRMATION_EMAIL)
+                       plone_utils.addPortalMessage(_(u'Your booking was processed successfully. Your selected session is highlighted below.'), 'success')
+                   except:
+                       plone_utils.addPortalMessage(_(u'Your booking was processed successfully but a confirmation email could not be sent.'), 'warning')
+ 
+                   self.booked_session_uid = timeSlot.UID()
                except:
-                   self.errors['slotSelection'] = "Your could not be signed up for your selected session.  It may have been cancelled or become full.  Please select a different session."
+                   self.errors['slotSelection'] = "Your could not be signed up for your selected session.  The session may have been cancelled or become full.  Please select a different session."
                
 
         #We're just loading the form, not submitting
@@ -121,11 +130,12 @@ class ChooseTimeSlot(BaseBrowserView):
            page.  It's similar to our normal booking page, but it gives
            the user the choice of their course rather than a session'''
         session = self.getSdmSession()
-        self.courses = self.queryStudentDetails(self.getAuthenticatedMember().getId(), as_dict=True)
+        self.courses = self.queryStudentDetails(self.getAuthenticatedMember().getId(), as_dict=True, search_student_id=False, search_login_id=True)
+        self.has_selection = False
 
         selectCourse = self.request.form.get('selectCourse')
         if self.request.form.get('form.submitted') == '1' and \
-           self.request.form.get('form.button.submit') == 'Next' and \
+           self.request.form.get('form.button.Submit') == 'Select' and \
            selectCourse is not None:
 
            self.authenticateForm()
@@ -150,12 +160,56 @@ class ChooseTimeSlot(BaseBrowserView):
 
         self.courseCount = len(self.courses)
 
+        #If we're just loading the page, we should pre-select any existing
+        #course selection the user has made.  Check our SDM session for one.
         if not selectCourse:
             selection = session.has_key(config.EHS_BOOKING_COURSE_IDENTIFIER) and session.get(config.EHS_BOOKING_COURSE_IDENTIFIER)
             if selection:
-                self.request.form.setdefault('selectCourse', self.buildCourseIdentifier(selection) ) 
+                self.request.form.setdefault('selectCourse', self.buildCourseIdentifier(selection) )
+                self.has_selection = True 
 
         view = ViewPageTemplateFile("selectcourse.pt")
+        return view.__of__(self)()
+
+    def cancelBooking(self):
+        '''Processing that happens when a user is cancelling a given
+           booking for a session.'''
+        if self.request.form.get('form.submitted') == '1' and \
+           self.request.form.get('form.button.Submit') == \
+           'Cancel selected session':
+
+            self.authenticateForm()
+
+            selectedSlots = self.request.get('selectedSlot', None)
+            if type(selectedSlots) != list:
+                selectedSlots = [selectedSlots]
+
+            if selectedSlots != [None]:
+                plone_utils = getToolByName(self.context, 'plone_utils')
+                student_details = self.getStudentDetailsFromSdm()
+                for slot in selectedSlots:
+                    try:
+                        booking_session = self.getBookingSessionByUid(slot)
+                        login_id = student_details['studentLoginId']
+                        person = booking_session[login_id]
+                        booking_session.manage_delObjects([login_id,])
+  
+                        try:
+                            #EMAIL: Send cancellation message to our user
+                            mail.sendNotificationEmail(context=self.context,
+                                      person=person,
+                                      request=self.request,
+                                      email_type=config.EHS_CANCELLATION_EMAIL)
+                            plone_utils.addPortalMessage(_(u'Your selected booking was cancelled successfully.  You have been sent a confirmation email.'), 'info')
+                        except:
+                            plone_utils.addPortalMessage(_(u'Your selected booking was cancelled successfully but a confirmation email could not be sent.'), 'warning')
+                            
+                        self.has_cancelled = True
+                    except:
+                        plone_utils.addPortalMessage(_(u'Your booking could not be cancelled.  Please contact Enrolment Help.'), 'error')
+
+
+        view = ViewPageTemplateFile("show-bookings.pt")
         return view.__of__(self)()
 
 
@@ -170,6 +224,42 @@ class ChooseTimeSlot(BaseBrowserView):
        '''Get the Session Data Manager's session for our current user'''
        sdm = getToolByName(self.context,'session_data_manager')
        return sdm.getSessionData(create=True)
+
+    def getStudentDetailsFromSdm(self):
+       return self.getSdmSession().get(config.EHS_BOOKING_COURSE_IDENTIFIER)
+
+    @instance.memoize
+    def getBookingSessionByUid(self, uid):
+        object = self.getObjectByUid(uid)
+        return (object is not None and \
+                object.getPortalTypeName() == 'Time Slot') and object or None
+ 
+    @instance.memoize
+    def getObjectByUid(self, uid):
+       return getToolByName(self.context, 'reference_catalog').lookupObject(uid)
+ 
+    @instance.memoize
+    def getBookedSession(self):
+       if hasattr(self, 'booked_session_uid') == False or self.booked_session_uid is None:
+           booking_session_uid = self.request.form.get('session')
+           if not booking_session_uid:
+               return None
+           else:
+               self.booked_session_uid = booking_session_uid
+
+       return self.getBookingSessionByUid(self.booked_session_uid)
+
+    @instance.memoize
+    def getBookedSessionChecked(self):
+        '''Okay, we need to check whether the given user is actually signed
+           up for the given session.  They could be: hacking, silly, or
+           have tried to click the link after already cancelling.'''
+        student_details = self.getStudentDetailsFromSdm()
+        booked_session = self.getBookedSession()
+        if not booked_session or \
+           student_details['studentLoginId'] not in booked_session:
+            booked_session = None
+        return booked_session
 
     @instance.memoize
     def showEditLinks(self):

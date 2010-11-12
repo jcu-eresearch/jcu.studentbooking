@@ -1,19 +1,19 @@
-from zope.interface import implements
-
-from Products.ATContentTypes.configuration import zconf
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import folder
-from Products.ATContentTypes.content import schemata
-
-from uwosh.timeslot import timeslotMessageFactory as _
-from uwosh.timeslot.interfaces import ISignupSheet
-from uwosh.timeslot.config import PROJECTNAME
-
 import csv
 from StringIO import StringIO
 from DateTime import DateTime
 
+from zope.interface import implements
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import folder
+from Products.ATContentTypes.content import schemata
+from Products.ATContentTypes.configuration import zconf
+from collective.easytemplate.fields import TemplatedTextField
+
+from uwosh.timeslot import timeslotMessageFactory as _
+from uwosh.timeslot.interfaces import ISignupSheet
+from uwosh.timeslot import config 
 from uwosh.timeslot.content.person import DummyExposedPersonSchema 
+
 
 SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
@@ -58,12 +58,55 @@ SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
                                                  Note: Contact info., sheet, day, time, and a url are included by default.'))
     ),
 
+    TemplatedTextField('confirmationEmailBody',
+        required=True,
+        searchable=False,
+        primary=False,
+        schemata='emails',
+        storage = atapi.AnnotationStorage(),
+        validators = ('isTidyHtmlWithCleanup',),
+        default_output_type = 'text/x-html-safe',
+        widget = atapi.RichWidget(label=_(u'Confirmation Email (Templated)'),
+                   description = _(u'Enter templated text to be sent out to students when they first sign up for an enrolment session.'),
+                   rows = 5,
+                   allow_file_upload = False),
+    ),
+
+    TemplatedTextField('reminderEmailBody',
+        required=True,
+        searchable=False,
+        primary=False,
+        schemata='emails',
+        storage = atapi.AnnotationStorage(),
+        validators = ('isTidyHtmlWithCleanup',),
+        default_output_type = 'text/x-html-safe',
+        widget = atapi.RichWidget(label=_(u'Reminder Email (Templated)'),
+                   description = _(u'Enter templated text to be sent out to students two days before their scheduled enrolment session.'),
+                   rows = 5,
+                   allow_file_upload = False),
+    ),
+
+    TemplatedTextField('cancellationEmailBody',
+        required=True,
+        searchable=False,
+        primary=False,
+        schemata='emails',
+        storage = atapi.AnnotationStorage(),
+        validators = ('isTidyHtmlWithCleanup',),
+        default_output_type = 'text/x-html-safe',
+        widget = atapi.RichWidget(label=_(u'Cancellation Email (Templated)'),
+                   description = _(u'Enter templated text to be sent out to students if they choose to cancel their scheduled enrolment session.'),
+                   rows = 5,
+                   allow_file_upload = False),
+    ),
+
 ))
 
 SignupSheetSchema['title'].storage = atapi.AnnotationStorage()
 SignupSheetSchema['description'].storage = atapi.AnnotationStorage()
 SignupSheetSchema['description'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 SignupSheetSchema['extraFields'].widget.visible = {'view':'invisible', 'edit':'invisible'}
+SignupSheetSchema['extraEmailContent'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 
 schemata.finalizeATCTSchema(SignupSheetSchema, folderish=True, moveDiscussion=False)
 
@@ -77,6 +120,9 @@ class SignupSheet(folder.ATFolder):
     description = atapi.ATFieldProperty('description')
     extraFields = atapi.ATFieldProperty('extraFields')
     contactInfo = atapi.ATFieldProperty('contactInfo')
+    confirmationEmailBody = atapi.ATFieldProperty('confirmationEmailBody')
+    reminderEmailBody = atapi.ATFieldProperty('reminderEmailBody')
+    cancellationEmailBody = atapi.ATFieldProperty('cancellationEmailBody')
     extraEmailContent = atapi.ATFieldProperty('extraEmailContent')
     allowSignupForMultipleSlots = atapi.ATFieldProperty('allowSignupForMultipleSlots')
     showSlotNames = atapi.ATFieldProperty('showSlotNames')
@@ -97,7 +143,7 @@ class SignupSheet(folder.ATFolder):
             raise ValueError('The date %s was not found.' % date)
         return brains[0].getObject()
         
-    def getDays(self):
+    def getDays(self, all=False):
         brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Day', path=self.getPath(),
                                                                depth=1, sort_on='getDate', sort_order='ascending')
         if len(brains) == 0:
@@ -109,7 +155,10 @@ class SignupSheet(folder.ATFolder):
             while (indexOfFirstUsefulObject < len(brains)) and (brains[indexOfFirstUsefulObject]['getDate'] < today):
                 indexOfFirstUsefulObject += 1
             
-            return [brains[i].getObject() for i in range(indexOfFirstUsefulObject, len(brains))]
+            if all:
+                return [i.getObject() for i in brains]
+            else:
+                return [brains[i].getObject() for i in range(indexOfFirstUsefulObject, len(brains))]
 
 
     def removeAllPeople(self):
@@ -120,19 +169,45 @@ class SignupSheet(folder.ATFolder):
         buffer = StringIO()
         writer = csv.writer(buffer)
 
-        writer.writerow(['Day', 'TimeSlotName', 'TimeSlotTime', 'Name', 'Status', 'Email', 'Phone', 'Class', 'Dept'])  
-        
-        for day in self.getDays():
-            for timeSlot in day.getTimeSlots():
-                for person in timeSlot.getPeople():
-                    writer.writerow([day.Title(), timeSlot.getName(), timeSlot.getTimeRange(), person.Title(), 
-                                     person.getReviewStateTitle(), person.getEmail(),
-                                     person.getPhone(), person.getClassification(), person.getDepartment()])
+        writer.writerow(config.EHS_CSV_EXPORT_FORMAT)
+
+        for day in self.getDays(all=True):
+            for session in day.getTimeSlots():
+                for person in session.getPeople():
+                    writer.writerow(self.buildCSVRow(day, session, person))
                     
         result = buffer.getvalue()
         buffer.close()
 
         return result
+
+    def buildCSVRow(self, day, session, person):
+        import ipdb; ipdb.set_trace()
+        return [session.getFacultyAbbreviation(),
+                day.getDate(),
+                session.getName(),
+                session.getTimeRange(),
+                'NOT AVAILABLE YET', #person.getStatus(),
+                person.getStudentNumber(),
+                person.getCourseCode(),
+                person.getAbbrevCourseTitle(),
+                person.getDefaultCampus(),
+                person.getStudentSurname(),
+                person.getStudentGivenName(),
+                person.getDaytimeContactNumber(),
+                person.getMobilePhoneNumber(),
+                person.getEmail(),
+                person.getPersonalEmail(),
+                person.getSubjectInfo() and 'Yes' or 'No',
+                person.getDifficultyWithEStudent(),
+                person.getIntendToApplyForAdvancedStanding() and 'Yes' or 'No',
+                person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
+                                                                    or 'No',
+                person.getIsInternational(),
+                person.getSanctions(),
+                person.getNumberSubjectsEnrolled(),
+               ]
+        
     
     def isCurrentUserSignedUpOrWaitingForAnySlot(self):
         username = self.getCurrentUsername()
@@ -204,4 +279,4 @@ class SignupSheet(folder.ATFolder):
         return '/'.join(path)
 
 
-atapi.registerType(SignupSheet, PROJECTNAME)
+atapi.registerType(SignupSheet, config.PROJECTNAME)

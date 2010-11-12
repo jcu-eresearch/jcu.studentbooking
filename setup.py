@@ -41,6 +41,7 @@ setup(name='uwosh.timeslot',
       zip_safe=False,
       install_requires=['setuptools',
                         'collective.monkeypatcher>=1.0',
+                        'collective.easytemplate',
                         # -*- Extra requirements: -*-
                         ],
       tests_require=tests_require,

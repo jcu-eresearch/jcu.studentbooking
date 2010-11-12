@@ -3,6 +3,7 @@ from plone.memoize import instance
 from uwosh.timeslot import config
 
 from z3c.sqlalchemy import getSAWrapper
+from sqlalchemy import or_, and_
 
 from zope.component import getMultiAdapter
 from Products.CMFCore.utils import getToolByName
@@ -26,7 +27,7 @@ class BaseBrowserView(BrowserView):
 
     def authenticateForm(self):
        authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
-       if not authenticator.verify(): raise Unauthorized('Your form submission did not validate correctly.') 
+       if not authenticator.verify(): raise Unauthorized('Your form submission did not authenticate correctly.') 
 
     @instance.memoize
     def isCurrentUserLoggedIn(self):
@@ -40,25 +41,35 @@ class BaseBrowserView(BrowserView):
         return portal_membership.getAuthenticatedMember()
 
     @instance.memoize
-    def queryStudentDetails(self, member_id, first=False, as_dict=True, use_student_id=False):
+    def queryStudentDetails(self, member_id, first=False, as_dict=True, search_student_id=True, search_login_id=False):
         '''Query student information from our database connection.
            By default, we search purely on their JCU ID and return all
-           results as dictionaries.'''
+           results as dictionaries. We can search on both JCU ID and
+           student ID by changing the last parameter.'''
         mapper_class = self.ehs_mapper.class_
 
-        attribute = use_student_id and mapper_class.studentNumber or mapper_class.studentLoginId
-        query = self.wrapper.session.query(self.ehs_mapper.class_).filter(attribute == member_id)
+        query = self.wrapper.session.query(mapper_class)
+#        if search_student_id and search_login_id:
+#            query = query.filter(or_(mapper_class.studentLoginId == member_id, mapper_class.studentNumber == member_id))
+        if search_student_id:
+            query = query.filter(mapper_class.studentNumber == member_id)
+        elif search_login_id:
+            query = query.filter(mapper_class.studentLoginId == member_id)
+        else:
+            #Bail.  We clearly don't want to search anything.
+            query = None
 
         #if conditions:
         #    for condition in conditions:
         #        query = query.filter( getattr(mapper_class, condition) == conditions[condition])
 
         results = None
-        if first:
-            results = query.first()
-            results = results and [results]  #wrap in a list
-        else:
-            results = query.all();
+        if query:
+            if first:
+                results = query.first()
+                results = results and [results]  #wrap in a list
+            else:
+                results = query.all();
 
         if as_dict and results and len(results) > 0:
             results = [result.asDict() for result in results]

@@ -12,13 +12,14 @@
                                 columns python:5+(showEditLinks and 1 or 0);
                                 errors view/errors;">
       
-      <h2 tal:content="context/Title" />
+      <h2 class="booking-page-title"><span tal:replace="context/Title" /> - Select your course</h2>
 
       <tal:no-courses condition="not:view/courses">
        <p>You have no current course record at JCU.</p>
       </tal:no-courses>
 
-      <form method="post" tal:condition="view/courses" 
+      <form method="post" name="ehs-select-course"
+                          tal:condition="view/courses" 
                           tal:attributes="action string:${view/absolute_url};"
                           tal:define="selectionField string:selectCourse;">
 
@@ -26,7 +27,7 @@
               id="archetypes-fieldname-selectCourse" 
               tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
 	  <span></span>
-	  <label class="formQuestion" for="chosenAllSubjects">To book an Enrolment Help session, select your course and click Next to continue.</label>
+	  <label class="formQuestion" for="chosenAllSubjects">To book an Enrolment Help session, pick your course and click Select to continue.</label>
 	  
 	  <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"></div>
 	  
@@ -55,8 +56,12 @@
 	</div> 
 
         <div style="margin-bottom:1em;">
-	  <input type="submit" value="Next" name="form.button.submit" />
+	  <input type="submit" value="Select" name="form.button.Submit" />
 	  <input type="hidden" value="1" name="form.submitted" />
+          <a href="#" tal:attributes="href string:${context/absolute_url}" 
+                      tal:condition="view/has_selection" id="return-to-booking">Return to booking page</a>
+          <a href="#" tal:attributes="href view/logout_url;"
+                      tal:condition="view/has_selection">Return to Step 4: Enrol</a>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 	</div>
 

@@ -201,7 +201,6 @@ class Person(base.ATCTContent):
     numberSubjectsEnrolled = atapi.ATFieldProperty('numberSubjectsEnrolled')
 
     def __init__(self, oid, **kwargs):
-        import ipdb; ipdb.set_trace()
         for field in OurPersonSchema.keys():
             setattr(self, field, kwargs.get(field))
 

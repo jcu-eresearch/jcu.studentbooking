@@ -8,6 +8,8 @@ from types import StringType
 from Products.validation.validators.BaseValidators import EMAIL_RE
 from Products.validation.validators.RegexValidator import ignoreRE, RegexValidator
 
+from DateTime import DateTime
+
 def patched_validate_required(self, instance, value, errors):
     if not value:
         return "This field is required"
@@ -45,7 +47,20 @@ class SanerValidator(RegexValidator):
                 return recursiveTranslate(msg, **kwargs)
         return 1 
 
+class EndTimeAfterStartTimeValidator:
+    __implements__ = IValidator
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, value, *args, **kwargs):
+        request = kwargs['REQUEST']
+        if DateTime(request['startTime']) >= DateTime(request['endTime']):
+            return """Your ending time needs to be after your starting time."""
+        return 1
+
 sanerValidators = [
+    EndTimeAfterStartTimeValidator('isEndTimeAfterStartTime'),
     SanerValidator('saneIsPhoneNumber', r'^\d+$', ignore='[\(\)\-\s\+]',
                    title='', description='',
                    errmsg=_(u'is not a valid phone number. Please check your input.')),

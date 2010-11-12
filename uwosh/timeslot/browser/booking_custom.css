@@ -1,0 +1,66 @@
+
+/*
+ * Hides some unnecessary things from the various uwosh.timeslot content types
+ */
+
+#archetypes-fieldname-submittedApplicationForAdvancedStanding { 
+display:none; 
+margin-left: 1.5em; 
+} 
+tr.timeslot span.room-number { 
+cursor: pointer; 
+} 
+tr.timeslot.session-selected-True { 
+background-color:#CEF; 
+} 
+tr.timeslot.users-session-True, dl.portalMessage.success dd { 
+background-color:#D6F8D8; 
+}
+dl.portalMessage.success dt {
+background-color:#55A843; 
+}
+dl.portalMessage.success dd,
+dl.portalMessage.success dt { 
+border: 1px solid #55A843;
+}
+h2.booking-page-title { 
+margin: 1em 0; 
+} 
+
+.ehs-current-bookings-list {
+margin-bottom:1.5em !important;
+}
+.ehs-buttons {
+margin-bottom:1em;
+}
+.ehs-centre-cell {
+text-align:center;
+}
+#contentview-contentrules, #contentview-redirection, #contentview-theme {
+display:none;
+}
+
+ul.collapsibleList.expanded
+{
+    display: block;
+}
+
+ul.collapsibleList.collapsed
+{
+    display: none;
+}
+
+li.collapsibleListHeader:hover
+{
+    cursor: pointer;
+}
+
+li.collapsibleListHeader.collapsed
+{
+    list-style: url(treeCollapsed.gif);
+}
+
+li.collapsibleListHeader.expanded
+{
+    list-style: url(treeExpanded.gif);
+}

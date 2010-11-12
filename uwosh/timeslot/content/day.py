@@ -7,6 +7,7 @@ from Products.ATContentTypes.content import schemata
 from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import IDay, ICloneable
 from uwosh.timeslot.config import PROJECTNAME
+from DateTime import DateTime
 
 DaySchema = folder.ATFolderSchema.copy() + atapi.Schema((
 
@@ -54,7 +55,14 @@ class Day(folder.ATFolder):
                              sort_order='ascending',
                              getFaculty=faculty_code,
                              )
-        timeSlots = [brain.getObject() for brain in brains]
+        now = DateTime()
+        currentTime = DateTime(2000, 01, 01, now.hour(), now.minute())
+
+        #Short circuit is this Day isn't today or if we're showing all faculties
+        showSlot = not self.getDate().isCurrentDay() or faculty_code == ''
+
+        #Give us back all timeslots where we short circuit or else the start after right now.
+        timeSlots = [brain.getObject() for brain in brains if showSlot or brain['getStartTime'] > currentTime]
         return timeSlots
         
     def getTimeSlot(self, title):
