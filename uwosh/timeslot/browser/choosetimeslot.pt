@@ -158,12 +158,13 @@
         <table class="plain" tal:define="days context/getDays"
                style="width: 100%; background-color: white;">
 	  
-	  <tr tal:condition="not:days" style="background-color: #F0F0F0">
+	  <tr tal:condition="not:days" class="ehs-main-row">
 	    <th style="border: none">
 	      <h3>There are no upcoming sessions.</h3>
 	    </th>
 	  </tr>
 
+         <tal:has-days condition="days">
 	    <tr>
 	      <th tal:condition="showSlotNames" style="width: 40%;">Name</th>
 	      <th>Time</th>
@@ -173,8 +174,8 @@
 	      <th tal:condition="showEditLinks">Admin</th>
 	    </tr>
 
-	  <tal:block tal:repeat="day days">
-	    <tr style="background-color: #F0F0F0">
+	  <tal:days repeat="day days">
+	    <tr class="ehs-main-row">
 	      <td colspan="5" style="text-align: left; border: none"
                   tal:attributes="colspan columns;">
 		<h4 style="float: left; margin:0 0.5em 0 0;" tal:content="day/Title" />
@@ -188,7 +189,7 @@
 	    </tr>
 		  
 	    
-	    <tal:block tal:define="timeSlots python:day.getTimeSlots(view.faculty_code)">
+	    <tal:sessions tal:define="timeSlots python:day.getTimeSlots(view.faculty_code)">
 	      <tr tal:condition="not:timeSlots">
 		<td colspan="5" tal:attributes="colspan columns;">There are no sessions available on this date.</td>
 	      </tr>
@@ -230,8 +231,9 @@
                 </td>
 	      </tr>
              </tal:rows>
-	    </tal:block>
-	  </tal:block>
+	    </tal:sessions>
+	  </tal:days>
+	 </tal:has-days>
 	</table>
        </div>
 

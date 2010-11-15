@@ -107,6 +107,9 @@ SignupSheetSchema['description'].storage = atapi.AnnotationStorage()
 SignupSheetSchema['description'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 SignupSheetSchema['extraFields'].widget.visible = {'view':'invisible', 'edit':'invisible'}
 SignupSheetSchema['extraEmailContent'].widget.visible = {'view':'invisible', 'edit':'invisible'}
+SignupSheetSchema['confirmationEmailBody'].widget.visible = {'view':'invisible', 'edit':'visible'}
+SignupSheetSchema['reminderEmailBody'].widget.visible = {'view':'invisible', 'edit':'visible'}
+SignupSheetSchema['cancellationEmailBody'].widget.visible = {'view':'invisible', 'edit':'visible'}
 
 schemata.finalizeATCTSchema(SignupSheetSchema, folderish=True, moveDiscussion=False)
 
@@ -132,8 +135,9 @@ class SignupSheet(folder.ATFolder):
         field = super(SignupSheet, self).getField(key)
         if not field:
             field = DummyExposedPersonSchema.get(key)
-            field.writeable = lambda context: True
-            field.checkPermission = lambda mode, instance: True
+            if field:
+                field.writeable = lambda context: True
+                field.checkPermission = lambda mode, instance: True
         return field
 
     def getDay(self, date):

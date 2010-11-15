@@ -22,10 +22,22 @@
         preserveOriginal="true"
         />
 
+    <monkey:patch
+        description="Stop errors when saving our context-sensitive field"
+        class="collective.easytemplate.fields.TemplatedTextField"
+        original="get"
+        replacement=".patches.patched_TemplatedTextField_get"
+        />
+
     <!-- Enable our custom permissions -->
     <permission
       id="uwosh.timeslot.ManageSchedule"
       title="uwosh.timeslot: Manage Schedule"
+      />
+
+    <permission
+      id="uwosh.timeslot.BookAnotherUserIn"
+      title="uwosh.timeslot: Book another user in"
       />
 
     <permission
@@ -48,20 +60,21 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
-    <!-- Register the event handlers -->
+    <!-- Register the event handlers
     <subscriber
       for=".interfaces.IPerson
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler=".subscribers.sendSignupNotificationEmail"
+           zope.app.container.interfaces.IObjectAddedEvent"
+      handler=".subscribers.sendNotificationEmail"
       />
 
     <subscriber
       for=".interfaces.IPerson
            zope.app.container.interfaces.IObjectRemovedEvent"
-      handler=".subscribers.attemptToFillEmptySpot"
-      />
+      handler=".subscribers."
+      /> -->
 
     <!-- Add the custom roles to the sharing tab -->
     <utility name="uwosh_timeslot_ScheduleViewer" factory=".sharing.ScheduleViewerRole"/>
+    <utility name="BookingStaffMember" factory=".sharing.BookingStaffMemberRole"/>
     <utility name="uwosh_timeslot_ScheduleManager" factory=".sharing.ScheduleManagerRole"/>
 </configure>

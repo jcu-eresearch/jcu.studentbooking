@@ -2,6 +2,7 @@
 <rolemap>
   <roles>
     <role name="uwosh_timeslot_ScheduleViewer"/>
+    <role name="BookingStaffMember"/>
     <role name="uwosh_timeslot_ScheduleManager"/>
   </roles>
   <permissions>
@@ -32,7 +33,13 @@
     </permission>
     <permission name="uwosh.timeslot: View Schedule" acquire="False">
       <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingStaffMember"/>
       <role name="uwosh_timeslot_ScheduleViewer"/>
+      <role name="Manager" />
+    </permission>
+    <permission name="uwosh.timeslot: Book another user in" acquire="False">
+      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingStaffMember"/>
       <role name="Manager" />
     </permission>
     <permission name="Add portal content" acquire="True">

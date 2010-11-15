@@ -81,7 +81,7 @@
         for="..interfaces.ISignupSheet"
         name="book-user"
         class=".bookuser.BookUserForm"
-        permission="uwosh.timeslot.ManageSchedule"
+        permission="uwosh.timeslot.BookAnotherUserIn"
         template="bookuser.pt"
         />
  

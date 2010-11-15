@@ -36,6 +36,9 @@ margin-bottom:1em;
 .ehs-centre-cell {
 text-align:center;
 }
+tr.ehs-main-row {
+background-color: #F0F0F0;
+}
 #contentview-contentrules, #contentview-redirection, #contentview-theme {
 display:none;
 }

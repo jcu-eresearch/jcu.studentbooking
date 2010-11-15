@@ -1,12 +1,12 @@
 from AccessControl.SecurityManagement import newSecurityManager, getSecurityManager, setSecurityManager
 from zope.app.component.hooks import getSite
 from Products.CMFCore.utils import getToolByName
-from collective.easytemplate.utils import outputTemplateErrors, applyTemplate
+from collective.templateengines.backends.jinja import Template
 from collective.easytemplate.engine import getTemplateContext
 
 from uwosh.timeslot import config
 
-def sendNotificationEmail(context, person, request, \
+def sendNotificationEmail(context, person, \
                           email_type=config.EHS_CONFIRMATION_EMAIL):
     '''Send email notification about something that has happened
        on the site.  Context should be the booking sheet.'''
@@ -19,21 +19,15 @@ def sendNotificationEmail(context, person, request, \
     #Get the right type of email field's contents here
     email_body = context[emailSpecs['bodyField']].getRaw()
 
-    templateContext = getTemplateContext(person)
-
-    #Have to elevate privileges here (only for a moment!)
-    old_security_manager = getSecurityManager()
-    newSecurityManager(request, portal.getWrappedOwner())
     try:
-        try:
-            templated_body = applyTemplate(templateContext, email_body)[0]
-        except:
-            #We're in the poo here because someone broke the template,
-            #probably.  They should really check their syntax.
-            context.plone_log('Warning: problem with EHS email template.')
-    finally:
-        setSecurityManager(old_security_manager)
-
+        templateContext = getTemplateContext(person)
+        templated_body = Template(config.EHS_TEMPLATING_ENGINE, \
+                                  email_body).evaluate(templateContext)[0]
+    except: 
+        #We're in the poo here because someone broke the template,
+        #probably.  They should really check their syntax.
+        context.plone_log('Warning: problem with EHS email template.')
+     
     #mto = [person.getEmail(),]
     mto = ['sk.random@gmail.com',]
     personalEmail = person.getPersonalEmail()
@@ -53,7 +47,7 @@ def sendNotificationEmail(context, person, request, \
     #        immediate=True, charset='utf8', msg_type='text/html')
     print "Mail sent to "+str(mto)
 
-def sendReminderEmails(context, request):
+def sendReminderEmails(context):
     '''This script is to be run once every day and sends a reminder
        email to each and every student with a booking on the next day.
        So, if we run Monday, we should be sending for Wednesday's sessions.'''

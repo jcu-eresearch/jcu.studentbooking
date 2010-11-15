@@ -74,6 +74,7 @@ TimeSlotSpecialSchema = atapi.Schema((
         storage=atapi.AnnotationStorage(),
         default=10,
         required=True,
+        validators = ('isSessionSizeOkay',),
         widget=atapi.IntegerWidget(label=_(u'Session Capacity'),
                                    description=_(u'The maximum number of people who can booking into this session.'))
     ),

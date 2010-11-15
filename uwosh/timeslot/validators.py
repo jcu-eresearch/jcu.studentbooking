@@ -59,8 +59,30 @@ class EndTimeAfterStartTimeValidator:
             return """Your ending time needs to be after your starting time."""
         return 1
 
+class SessionSizeIsOkayValidator:
+    __implements__ = IValidator
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs.get('instance')
+        if instance:
+            session_count = len(self.contentItems())
+            value_int = int(value)
+            if value_int < 1:
+                return "Enter a valid capacity."
+            elif value_int < session_count:
+                return "You already have " + str(session_count) + " student" + \
+                       (session_count == 1 and ' ' or 's ') + \
+                       "signed up for this session.  You cannot reduce \
+                         the capacity to less than this."
+
+        return 1
+
 sanerValidators = [
     EndTimeAfterStartTimeValidator('isEndTimeAfterStartTime'),
+    SessionSizeIsOkayValidator('isSessionSizeOkay'),
     SanerValidator('saneIsPhoneNumber', r'^\d+$', ignore='[\(\)\-\s\+]',
                    title='', description='',
                    errmsg=_(u'is not a valid phone number. Please check your input.')),

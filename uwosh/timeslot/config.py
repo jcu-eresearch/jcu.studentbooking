@@ -2,6 +2,7 @@
 """
 
 from Products.Archetypes.atapi import DisplayList
+from collective.templateengines.backends.jinja import Engine
 
 PROJECTNAME = 'uwosh.timeslot'
 
@@ -12,6 +13,8 @@ EHS_BOOKING_TABLE_NAME = 'EHS_BOOKING'
 EHS_BOOKING_ABSOLUTE_NAME = EHS_BOOKING_TABLE_NAME+'.'+EHS_BOOKING_DB_SCHEMA
 
 EHS_BOOKING_COURSE_IDENTIFIER = "EHS_BOOKING_COURSE_IDENTIFIER"
+
+EHS_TEMPLATING_ENGINE = Engine()
 
 #We may want to calculate these from an SQL call...
 FACULTY_LIST = DisplayList((

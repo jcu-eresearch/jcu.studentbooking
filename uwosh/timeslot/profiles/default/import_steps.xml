@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<import-steps>
+  <import-step id="uwosh.timeslot.various"
+               version="20101115-01"
+               handler="uwosh.timeslot.setuphandlers.setupVarious"
+               title="Uwosh Timeslot: miscellaneous import steps">
+    <dependency step="catalog" />
+    Various import steps that are not handled by GS import/export
+    handlers.
+  </import-step>
+</import-steps>
+
