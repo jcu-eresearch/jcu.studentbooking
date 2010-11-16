@@ -8,14 +8,14 @@
     <tal:main-macro metal:define-macro="main"
                tal:define="bookedin context/isCurrentUserSignedUpForAnySlot;">
       
-      <h2 class="booking-page-title"><span tal:replace="context/Title" /> - Manage your bookings</h2>
+      <h2 class="booking-page-title"><span tal:replace="context/Title" /> - Cancel your booking</h2>
       
 	<form method="post" name="ehs-manage-bookings"
               tal:attributes="action string:${context/absolute_url}/@@cancel-reservation;">
           <div class="documentContent">
 	    <tal:booked-in condition="bookedin">
-	        <p>To cancel your booking, select a session and click the "Cancel selected sessions" button.</p>
-  	        <p>You are signed up for the following sessions:</p>
+	        <p>To cancel your booking, select a session and click the "Cancel selected session" button.</p>
+  	        <p>You are signed up for the following session:</p>
  	        <ul class="visualNoMarker ehs-current-bookings-list">
                    <tal:sessions tal:repeat="slot context/getSlotsCurrentUserIsSignedUpFor">
                    <li>
@@ -27,7 +27,7 @@
 	        </ul>
             </tal:booked-in>
             <tal:not-booked-in condition="not:bookedin">
-   	        <p>You are not booked into any upcoming sessions.</p>
+   	        <p>You are not booked into any upcoming session.</p>
             </tal:not-booked-in>
           </div>
 	      

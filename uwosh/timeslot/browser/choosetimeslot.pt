@@ -123,7 +123,7 @@
         </li>
 	<li tal:condition="not:isBookingStaff">
            <a id="ehs-manage-bookings"
-              tal:attributes="href string:${context_url}/@@show-bookings">Manage existing bookings</a></li>
+              tal:attributes="href string:${context_url}/@@show-bookings">Cancel an existing booking</a></li>
 	<li tal:condition="not:isBookingStaff">
            <a id="ehs-return-to-step4"
               tal:attributes="href string:${context_url}/logout">Return to Step 4: Enrol</a></li>
