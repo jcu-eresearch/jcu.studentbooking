@@ -1,16 +1,14 @@
 """Main product initializer
 """
-
 from zope.i18nmessageid import MessageFactory
-from uwosh.timeslot import config
-
 from Products.Archetypes import atapi
 from Products.CMFCore import utils
 from Products.CMFCore.permissions import setDefaultRoles
-
-
 from Products.validation import validation
+
 from uwosh.timeslot.validators import sanerValidators
+from uwosh.timeslot import config
+
 for sanerValidator in sanerValidators:
     validation.register(sanerValidator)
 
@@ -67,8 +65,9 @@ def initialize(context):
     with Zope and the CMF.
     """
 
-    setDefaultRoles('uwosh.timeslot: Manage Schedule', ())
-    setDefaultRoles('uwosh.timeslot: View Schedule', ())
+    setDefaultRoles('jcu.booking: Manage bookings', ())
+    setDefaultRoles('jcu.booking: Book another user in', ())
+    setDefaultRoles('jcu.booking: View all bookings', ())
 
     # Retrieve the content types that have been registered with Archetypes
     # This happens when the content type is imported and the registerType()

@@ -5,11 +5,11 @@ This module contains the tool of uwosh.timeslot
 import os
 from setuptools import setup, find_packages
 
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-
 _home_dir = os.path.join(os.path.dirname(__file__), 'uwosh', 'timeslot')
 version = file(os.path.join(_home_dir, 'version.txt'), 'r').read().strip()
+
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 long_description = (
     read('README.txt')
@@ -49,9 +49,12 @@ setup(name='uwosh.timeslot',
       test_suite = 'uwosh.timeslot.tests.test_docs.test_suite',
       entry_points="""
       # -*- entry_points -*- 
-
+      
       [z3c.autoinclude.plugin]
       target = plone
+ 
+      [distutils.setup_keywords]
+      paster_plugins = setuptools.dist:assert_string_list
       """,
       #paster_plugins = ["ZopeSkel"],
       )

@@ -1,49 +1,49 @@
 <?xml version="1.0"?>
 <rolemap>
   <roles>
-    <role name="uwosh_timeslot_ScheduleViewer"/>
-    <role name="BookingStaffMember"/>
-    <role name="uwosh_timeslot_ScheduleManager"/>
+    <role name="BookingViewer"/>
+    <role name="BookingStaff"/>
+    <role name="BookingManager"/>
   </roles>
   <permissions>
     <!-- -*- extra stuff goes here -*- -->
     <permission name="uwosh.timeslot: Add Person" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingManager"/>
       <role name="Manager" />
       <role name="Contributor" />
     </permission>
     <permission name="uwosh.timeslot: Add Time Slot" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingManager"/>
       <role name="Manager" />
       <role name="Contributor" />
     </permission>
     <permission name="uwosh.timeslot: Add Day" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingManager"/>
       <role name="Manager" />
       <role name="Contributor" />
     </permission>
     <permission name="uwosh.timeslot: Add Signup Sheet" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingManager"/>
       <role name="Manager" />
       <role name="Contributor" />
     </permission>
-    <permission name="uwosh.timeslot: Manage Schedule" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
+    <permission name="jcu.booking: Manage bookings" acquire="False">
+      <role name="BookingManager"/>
       <role name="Manager" />
     </permission>
-    <permission name="uwosh.timeslot: View Schedule" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
-      <role name="BookingStaffMember"/>
-      <role name="uwosh_timeslot_ScheduleViewer"/>
+    <permission name="jcu.booking: View all bookings" acquire="False">
+      <role name="BookingManager"/>
+      <role name="BookingStaff"/>
+      <role name="BookingViewer"/>
       <role name="Manager" />
     </permission>
-    <permission name="uwosh.timeslot: Book another user in" acquire="False">
-      <role name="uwosh_timeslot_ScheduleManager"/>
-      <role name="BookingStaffMember"/>
+    <permission name="jcu.booking: Book another user in" acquire="False">
+      <role name="BookingManager"/>
+      <role name="BookingStaff"/>
       <role name="Manager" />
     </permission>
     <permission name="Add portal content" acquire="True">
-      <role name="uwosh_timeslot_ScheduleManager"/>
+      <role name="BookingManager"/>
     </permission>
   </permissions>
 </rolemap>

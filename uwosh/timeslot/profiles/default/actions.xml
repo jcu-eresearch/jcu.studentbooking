@@ -17,7 +17,7 @@
       name="available_expr">python:object.Type() == 'Signup Sheet'</property>
    <property name="permissions">
     <element value="Manage portal"/>
-    <element value="uwosh.timeslot: View Schedule"/>
+    <element value="jcu.booking: View all bookings"/>
    </property>
    <property name="visible">True</property>
   </object>
@@ -31,7 +31,7 @@
       name="available_expr">python:object.Type() in ['Day', 'Time Slot']</property>
    <property name="permissions">
     <element value="Manage portal"/>
-    <element value="uwosh.timeslot: Manage Schedule"/>
+    <element value="jcu.booking: Manage bookings"/>
    </property>
    <property name="visible">True</property>
   </object>

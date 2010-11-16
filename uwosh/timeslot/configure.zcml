@@ -31,18 +31,18 @@
 
     <!-- Enable our custom permissions -->
     <permission
-      id="uwosh.timeslot.ManageSchedule"
-      title="uwosh.timeslot: Manage Schedule"
+      id="uwosh.timeslot.ManageBookings"
+      title="jcu.booking: Manage bookings"
       />
 
     <permission
       id="uwosh.timeslot.BookAnotherUserIn"
-      title="uwosh.timeslot: Book another user in"
+      title="jcu.booking: Book another user in"
       />
 
     <permission
-      id="uwosh.timeslot.ViewSchedule"
-      title="uwosh.timeslot: View Schedule"
+      id="uwosh.timeslot.ViewBookings"
+      title="jcu.booking: View all bookings"
       />
 
     <five:registerPackage package="." initialize=".initialize" />
@@ -74,7 +74,7 @@
       /> -->
 
     <!-- Add the custom roles to the sharing tab -->
-    <utility name="uwosh_timeslot_ScheduleViewer" factory=".sharing.ScheduleViewerRole"/>
-    <utility name="BookingStaffMember" factory=".sharing.BookingStaffMemberRole"/>
-    <utility name="uwosh_timeslot_ScheduleManager" factory=".sharing.ScheduleManagerRole"/>
+    <utility name="BookingViewer" factory=".sharing.BookingViewerRole"/>
+    <utility name="BookingStaff" factory=".sharing.BookingStaffRole"/>
+    <utility name="BookingManager" factory=".sharing.BookingManagerRole"/>
 </configure>

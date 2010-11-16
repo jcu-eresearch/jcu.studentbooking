@@ -29,7 +29,7 @@
       name="manager-summary"
       template="managersummary.pt"
       allowed_interface=".choosetimeslot.IChooseTimeSlot"
-      permission="uwosh.timeslot.ViewSchedule"
+      permission="uwosh.timeslot.ViewBookings"
       />
       
     <browser:page
@@ -37,14 +37,14 @@
       name="export-to-csv"
       class=".exporttocsv.ExportToCSV"
       attribute="exportToCSV"
-      permission="uwosh.timeslot.ViewSchedule"
+      permission="uwosh.timeslot.ViewBookings"
       />
     
     <browser:page
         for="..interfaces.ISignupSheet"
         name="remove-all-people"
         class=".removeallpeople.RemoveAllPeopleForm"
-        permission="uwosh.timeslot.ManageSchedule"
+        permission="uwosh.timeslot.ManageBookings"
         />
 	
     <browser:pages
@@ -97,7 +97,7 @@
         for="..interfaces.ICloneable"
         name="clone"
         class=".clone.CloneForm"
-        permission="uwosh.timeslot.ManageSchedule"
+        permission="uwosh.timeslot.ManageBookings"
         />
 
     <browser:menuItem
