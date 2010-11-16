@@ -268,7 +268,7 @@ class ChooseTimeSlot(BaseBrowserView):
         '''Check permissions to see the administrative management links'''
         member = self.getAuthenticatedMember()
         if member and 'Authenticated' in member.getRoles():
-            return member.checkPermission("uwosh.timeslot: Manage Schedule", self.context)
+            return member.checkPermission("jcu.booking: Manage bookings", self.context)
         else:
             return False
 
@@ -288,7 +288,7 @@ class ChooseTimeSlot(BaseBrowserView):
     def isBookingStaff(self):
         member = self.getAuthenticatedMember()
         if member and 'Authenticated' in member.getRoles():
-            return member.checkPermission("uwosh.timeslot: Book another user in", self.context)
+            return member.checkPermission("jcu.booking: Book another user in", self.context)
         else:
             return False
 

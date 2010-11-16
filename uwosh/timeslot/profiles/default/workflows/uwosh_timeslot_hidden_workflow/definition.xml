@@ -12,30 +12,29 @@
   <description>Hidden from everyone except managers.</description>
   <permission-map name="Access contents information"
                   acquired="False">
-   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>BookingManager</permission-role>
    <permission-role>Manager</permission-role>
-   <permission-role>uwosh_timeslot_ScheduleViewer</permission-role>
+   <permission-role>BookingViewer</permission-role>
    <permission-role>Member</permission-role>
    <permission-role>Authenticated</permission-role>
-   <permission-role>Anonymous</permission-role>  
   </permission-map>
   <permission-map name="List folder contents"
                   acquired="False">
-   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>BookingManager</permission-role>
    <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
                   acquired="False">
-   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>BookingManager</permission-role>
    <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="View" acquired="False">
-   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>BookingManager</permission-role>
    <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="uwosh.timeslot: Add Person"
                   acquired="False">
-   <permission-role>uwosh_timeslot_ScheduleManager</permission-role>
+   <permission-role>BookingManager</permission-role>
    <permission-role>Manager</permission-role>
    <permission-role>Member</permission-role>
    <permission-role>Authenticated</permission-role>  

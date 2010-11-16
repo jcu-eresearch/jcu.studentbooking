@@ -212,7 +212,6 @@ class SignupSheet(folder.ATFolder):
                 person.getNumberSubjectsEnrolled(),
                ]
         print row
-        import ipdb; ipdb.set_trace()
         return row
     
     def isCurrentUserSignedUpOrWaitingForAnySlot(self):

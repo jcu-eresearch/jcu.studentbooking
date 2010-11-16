@@ -1,4 +1,3 @@
-from AccessControl.SecurityManagement import newSecurityManager, getSecurityManager, setSecurityManager
 from zope.app.component.hooks import getSite
 from Products.CMFCore.utils import getToolByName
 from collective.templateengines.backends.jinja import Template
