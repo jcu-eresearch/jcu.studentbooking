@@ -45,7 +45,7 @@ ehs_mapper = mapper(EhsBookingMapper, table, primary_key=table.c._data.values(),
     'pers_email': synonym('personalEmail', map_column=True),
     'intnl_stu':  synonym('isInternational', map_column=True),
     'sanctions':  synonym('sanction', map_column=True),
-    'adv_std':    synonym('advancedStanding', map_column=True),
+    'adv_std':    synonym('advancedStandingApproved', map_column=True),
     'no_subjects_enr':synonym('numberSubjectsEnrolled', map_column=True),
 })
 wrapper.registerMapper(ehs_mapper, name=config.EHS_BOOKING_ABSOLUTE_NAME)

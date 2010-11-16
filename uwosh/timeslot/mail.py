@@ -23,13 +23,12 @@ def sendNotificationEmail(context, person, \
         templateContext = getTemplateContext(person)
         templated_body = Template(config.EHS_TEMPLATING_ENGINE, \
                                   email_body).evaluate(templateContext)[0]
-    except: 
+    except:
         #We're in the poo here because someone broke the template,
         #probably.  They should really check their syntax.
         context.plone_log('Warning: problem with EHS email template.')
      
-    #mto = [person.getEmail(),]
-    mto = ['sk.random@gmail.com',]
+    mto = [person.getEmail(),'david@davidjb.com',]
     personalEmail = person.getPersonalEmail()
     if personalEmail:  mto.append(personalEmail)
 
@@ -39,7 +38,7 @@ def sendNotificationEmail(context, person, \
 
     mh = getToolByName(context, 'MailHost')
     mh.secureSend(templated_body, mto=mto, mfrom=mfrom, \
-            subject=msubject, charset='utf8', subtype='html')
+            subject=msubject, subtype='html')
 
     #Oh Plone 4 where art thou?
     #mh.send(templated_body, mto=mto, mfrom=mfrom, \

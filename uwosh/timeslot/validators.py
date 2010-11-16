@@ -68,7 +68,7 @@ class SessionSizeIsOkayValidator:
     def __call__(self, value, *args, **kwargs):
         instance = kwargs.get('instance')
         if instance:
-            session_count = len(self.contentItems())
+            session_count = len(instance.getFolderContents())
             value_int = int(value)
             if value_int < 1:
                 return "Enter a valid capacity."

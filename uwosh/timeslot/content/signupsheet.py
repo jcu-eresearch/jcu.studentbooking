@@ -171,7 +171,7 @@ class SignupSheet(folder.ATFolder):
         
     def exportToCSV(self):
         buffer = StringIO()
-        writer = csv.writer(buffer)
+        writer = csv.writer(buffer, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         writer.writerow(config.EHS_CSV_EXPORT_FORMAT)
 
@@ -186,8 +186,7 @@ class SignupSheet(folder.ATFolder):
         return result
 
     def buildCSVRow(self, day, session, person):
-        import ipdb; ipdb.set_trace()
-        return [session.getFacultyAbbreviation(),
+        row = [session.getFacultyAbbreviation(),
                 day.getDate(),
                 session.getName(),
                 session.getTimeRange(),
@@ -199,19 +198,22 @@ class SignupSheet(folder.ATFolder):
                 person.getStudentSurname(),
                 person.getStudentGivenName(),
                 person.getDaytimeContactNumber(),
-                person.getMobilePhoneNumber(),
-                person.getEmail(),
-                person.getPersonalEmail(),
+                person.getMobilePhoneNumber() or '',
+                person.getEmail() or '',
+                person.getPersonalEmail() or '',
                 person.getSubjectInfo() and 'Yes' or 'No',
-                person.getDifficultyWithEStudent(),
+                person.getDifficultyWithEStudent() and 'Yes' or 'No',
                 person.getIntendToApplyForAdvancedStanding() and 'Yes' or 'No',
                 person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
                                                                     or 'No',
-                person.getIsInternational(),
+                person.getAdvancedStandingApproved() == 'Y' and 'Yes' or 'No',
+                person.getIsInternational() == 'Y' and 'Yes' or 'No',
                 person.getSanctions(),
                 person.getNumberSubjectsEnrolled(),
                ]
-        
+        print row
+        import ipdb; ipdb.set_trace()
+        return row
     
     def isCurrentUserSignedUpOrWaitingForAnySlot(self):
         username = self.getCurrentUsername()

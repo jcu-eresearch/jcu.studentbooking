@@ -139,9 +139,9 @@ HiddenPersonSchema = atapi.Schema((
         widget=atapi.StringWidget(label=_(u'Sanctions'),),
     ),
 
-    atapi.StringField('advancedStanding',
+    atapi.StringField('advancedStandingApproved',
         storage=atapi.AnnotationStorage(),
-        widget=atapi.StringWidget(label=_(u'Advanced Standing'),),
+        widget=atapi.StringWidget(label=_(u'Advanced Standing Approved?'),),
     ),
 
     atapi.IntegerField('numberSubjectsEnrolled',
@@ -197,7 +197,7 @@ class Person(base.ATCTContent):
     submittedApplicationForAdvancedStanding = atapi.ATFieldProperty('submittedApplicationForAdvancedStanding')
     isInternational = atapi.ATFieldProperty('isInternational')
     sanctions = atapi.ATFieldProperty('sanctions')
-    advancedStanding = atapi.ATFieldProperty('advancedStanding')
+    advancedStandingApproved = atapi.ATFieldProperty('advancedStandingApproved')
     numberSubjectsEnrolled = atapi.ATFieldProperty('numberSubjectsEnrolled')
 
     def __init__(self, oid, **kwargs):

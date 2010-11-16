@@ -35,7 +35,7 @@ class ChooseTimeSlot(BaseBrowserView):
 
         #If a user hasn't selected a course yet, then get them to.
         #Administrators are special -- they don't get bumped.
-        if self.student_details is None and not self.showEditLinks():
+        if self.student_details is None and not self.showEditLinks() and not self.isBookingStaff():
             self.context.request.response.redirect(self.context.absolute_url()+'/@@select-course')
             return
 
@@ -88,14 +88,15 @@ class ChooseTimeSlot(BaseBrowserView):
                        #EMAIL: Send confirmation email to our user
                        mail.sendNotificationEmail(context=self.context,
                                       person=timeSlot[person],
-                                      request=self.request,
                                       email_type=config.EHS_CONFIRMATION_EMAIL)
                        plone_utils.addPortalMessage(_(u'Your booking was processed successfully. Your selected session is highlighted below.'), 'success')
                    except:
+                       raise
                        plone_utils.addPortalMessage(_(u'Your booking was processed successfully but a confirmation email could not be sent.'), 'warning')
  
                    self.booked_session_uid = timeSlot.UID()
                except:
+                   raise
                    self.errors['slotSelection'] = "Your could not be signed up for your selected session.  The session may have been cancelled or become full.  Please select a different session."
                
 
@@ -198,14 +199,15 @@ class ChooseTimeSlot(BaseBrowserView):
                             #EMAIL: Send cancellation message to our user
                             mail.sendNotificationEmail(context=self.context,
                                       person=person,
-                                      request=self.request,
                                       email_type=config.EHS_CANCELLATION_EMAIL)
                             plone_utils.addPortalMessage(_(u'Your selected booking was cancelled successfully.  You have been sent a confirmation email.'), 'info')
                         except:
+                            raise
                             plone_utils.addPortalMessage(_(u'Your selected booking was cancelled successfully but a confirmation email could not be sent.'), 'warning')
                             
                         self.has_cancelled = True
                     except:
+                        raise
                         plone_utils.addPortalMessage(_(u'Your booking could not be cancelled.  Please contact Enrolment Help.'), 'error')
 
 
@@ -284,8 +286,11 @@ class ChooseTimeSlot(BaseBrowserView):
 
     @instance.memoize
     def isBookingStaff(self):
-        #XXX This needs to be corrected to handle new 
-        return self.showEditLinks()
+        member = self.getAuthenticatedMember()
+        if member and 'Authenticated' in member.getRoles():
+            return member.checkPermission("uwosh.timeslot: Book another user in", self.context)
+        else:
+            return False
 
     @instance.memoize
     def getExposedFields(self):
