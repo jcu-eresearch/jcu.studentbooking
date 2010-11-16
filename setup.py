@@ -36,7 +36,7 @@ setup(name='uwosh.timeslot',
       url='http://www.uwosh.edu/ploneprojects/',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['uwosh', ],
+      namespace_packages=['uwosh'],
       include_package_data=True,
       zip_safe=False,
       install_requires=['setuptools',
@@ -49,11 +49,9 @@ setup(name='uwosh.timeslot',
       test_suite = 'uwosh.timeslot.tests.test_docs.test_suite',
       entry_points="""
       # -*- entry_points -*- 
-      [distutils.setup_keywords]
-      paster_plugins = setuptools.dist:assert_string_list
 
-      [egg_info.writers]
-      paster_plugins.txt = setuptools.command.egg_info:write_arg
+      [z3c.autoinclude.plugin]
+      target = plone
       """,
-      paster_plugins = ["ZopeSkel"],
+      #paster_plugins = ["ZopeSkel"],
       )
