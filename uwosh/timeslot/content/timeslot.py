@@ -9,6 +9,7 @@ from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import ITimeSlot, ICloneable
 from uwosh.timeslot import config
 from uwosh.timeslot.widget import TimeWidget
+from uwosh.timeslot import util 
 
 from DateTime import DateTime
 from Acquisition import aq_parent
@@ -145,7 +146,10 @@ class TimeSlot(folder.ATFolder):
     def Title(self):
         timerange = self.getTimeRange()
         if self.name != '':
-            return '%s (%s)' % (timerange,self.name)
+            return '%s (%s; %s; %s)' % (timerange,
+                                      self.name,
+                                      util.getFacultyAbbreviation(self.faculty),
+                                      self.campus)
         elif timerange != '':
             return timerange
         else:
@@ -204,22 +208,19 @@ class TimeSlot(folder.ATFolder):
         return '/'.join(path)
 
     def getFacultyList(self):
-        #Should this come from SMS?
-        return config.FACULTY_LIST 
+        return util.getFacultyList()
 
     def getCampusList(self):
-        #Should this come from SMS?
-        return config.CAMPUS_LIST
+        return util.getCampusList()
 
     def getFacultyName(self):
-        return self.getFacultyList().getValue(self.faculty)
+        return util.getFacultyName(self.faculty)
 
     def getFacultyAbbreviation(self):
-        facultyName = self.getFacultyName()
-        return facultyName[facultyName.find('(')+1:facultyName.rfind(')')]
+        return util.getFacultyAbbreviation(self.faculty) 
 
     def getCampusName(self):
-        return self.getCampusList().getValue(self.campus)
+        return util.getCampusName(self.campus)
 
     def showRoomUrl(self):
         return self.campus in ['TSV', 'CNS']
@@ -243,3 +244,4 @@ class TimeSlot(folder.ATFolder):
         
 
 atapi.registerType(TimeSlot, config.PROJECTNAME)
+

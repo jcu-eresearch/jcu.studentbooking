@@ -12,6 +12,7 @@ from zope.component import queryUtility
 from plone.i18n.normalizer.interfaces import IURLNormalizer
 
 from uwosh.timeslot.content.timeslot import TimeSlotSpecialSchema
+from uwosh.timeslot.util import getFacultyAbbreviation
 
 # Begin ugly hack. It works around a ContentProviderLookupError: plone.htmlhead error caused by Zope 2 permissions.
 #
@@ -126,9 +127,16 @@ class CloneForm(formbase.PageForm):
     def createNewTimeSlot(self, startTime, endTime, **properties):
         id = (startTime.strftime('%I-%M-%P') + '-' + endTime.strftime('%I-%M-%P')).lower()
         name = properties.get('name') or '';
+        faculty_abbr = getFacultyAbbreviation(properties['faculty'])
+        campus = properties['campus']
         if name != '':
-            id = name + '-' + id
-        id = queryUtility(IURLNormalizer).normalize(id)
+            id = id + '-' + name + '-' + faculty_abbr + '-' + campus
+        original_id = queryUtility(IURLNormalizer).normalize(id)
+        id = original_id
+
+        counter = 1
+        while id in self.parent:
+            id = original_id + '-' + str(counter)
 
         try:
             self.parent.invokeFactory('Time Slot', id, startTime=startTime, endTime=endTime, **properties)
