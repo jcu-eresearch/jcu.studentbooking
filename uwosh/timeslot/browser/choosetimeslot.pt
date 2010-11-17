@@ -201,6 +201,9 @@
 		<td tal:condition="showSlotNames">
 		  <strong tal:content="timeSlot/name">Session Name</strong>
 		    <em tal:condition="timeSlot/isCurrentUserSignedUpForThisSlot"><strong>&rarr; Your session &larr;</strong></em>
+                    <span tal:condition="showEditLinks" class="discreet">
+                    (<span tal:replace="timeSlot/getFacultyAbbreviation" />)
+                    </span>
 		</td>
 		<td>
 		  <span tal:content="timeSlot/getTimeRange" />
