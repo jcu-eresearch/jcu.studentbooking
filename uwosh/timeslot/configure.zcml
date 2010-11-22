@@ -31,6 +31,16 @@
         replacement=".patches.patched_TemplatedTextField_get"
         />
 
+    <monkey:patch
+        description="Let our plone.directives.form work without bounds"
+        class="plone.z3cform.layout.FormWrapper"
+        original="__call__"
+        replacement=".patches.patched_z3cform_layout_call"
+        />
+
+
+
+
     <!-- Enable our custom permissions -->
     <permission
       id="uwosh.timeslot.ManageBookings"

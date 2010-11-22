@@ -52,14 +52,12 @@ class IManagerReportExportFormSchema(form.Schema):
                     required=False,
                 )
 
-    sortOrder = schema.List(title=_(u"Sort Order"),
-                    description=_(u"Specify how you would like your report sorted.  Use the controls to select fields, and then use the up and down arrows to specify order. Making no change here accepts default ordering."),
-                    required=False, default=[],
-                    value_type=schema.Choice( \
-                                         source=config.SORT_ORDER_VOCABULARY),
-                )
-
-    #some sort of sort order field here??
+    #sortOrder = schema.List(title=_(u"Sort Order"),
+    #                description=_(u"Specify how you would like your report sorted.  Use the controls to select fields, and then use the up and down arrows to specify order. Making no change here accepts default ordering."),
+    #                required=False, default=[],
+    #                value_type=schema.Choice( \
+    #                                     source=config.SORT_ORDER_VOCABULARY),
+    #            )
 
 class ManagerReportExportForm(form.SchemaForm):
     grok.name('manager-summary')
@@ -68,7 +66,7 @@ class ManagerReportExportForm(form.SchemaForm):
  
     schema = IManagerReportExportFormSchema
     ignoreContext = True
-    label = _(u"Manager Summary: Report Export (Options are not active yet!)")
+    label = _(u"Manager Summary: Report Export")
     description = _(u"Select options below to output a report of session sign ups")
     output = None
 

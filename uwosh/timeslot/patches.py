@@ -20,5 +20,10 @@ def patched_TemplatedTextField_get(self, instance, **kwargs):
         return self._getCooked(instance, text)
 
 def patched_z3cform_layout_call(self):
+    """We use the update/render pattern. If a redirect happens in the
+       meantime, we simply skip the rendering.
+    """
     self.update()
-    return
+    if hasattr(self, 'contents') and self.contents and '<form' not in self.contents:
+        return self.contents
+    return self.render()
