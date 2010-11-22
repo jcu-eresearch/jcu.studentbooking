@@ -11,8 +11,8 @@
       />
 
     <browser:resource
-      name="collapsiblelists.js"
-      file="collapsiblelists.js"
+      name="booking_custom.js"
+      file="booking_custom.js"
       />
 
     <browser:page

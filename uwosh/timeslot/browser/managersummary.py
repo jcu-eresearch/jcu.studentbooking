@@ -22,6 +22,8 @@ from uwosh.timeslot.content.timeslot import TimeSlotSpecialSchema
 from uwosh.timeslot.interfaces import ISignupSheet
 from uwosh.timeslot.util import getFacultyAbbreviation
 
+from plone.z3cform.interfaces import IWrappedForm
+
 class IManagerReportExportFormSchema(form.Schema):
     
     form.widget(faculty=CheckBoxFieldWidget)
@@ -60,6 +62,7 @@ class IManagerReportExportFormSchema(form.Schema):
     #            )
 
 class ManagerReportExportForm(form.SchemaForm):
+#    implements(IWrappedForm)
     grok.name('manager-summary')
     grok.require('uwosh.timeslot.ViewBookings')
     grok.context(ISignupSheet)
