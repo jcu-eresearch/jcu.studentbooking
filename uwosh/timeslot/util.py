@@ -6,6 +6,13 @@ def explodeCourseIdentifier(course_str, delimiter='-'):
              'courseYear': course[1],
              'defaultCampus': course[2] }
 
+def buildCourseIdentifier(selection, delimiter='-'):
+    '''Our course identifier is used within pages to distinctly 
+       identify a course based on code, year, and campus.  Other
+       factors may need to be included here'''
+    return delimiter.join( (selection['courseCode'], str(selection['courseYear']), selection['defaultCampus']) )
+
+
 def getFacultyList():
     #Should this come from SMS?
     return config.FACULTY_LIST

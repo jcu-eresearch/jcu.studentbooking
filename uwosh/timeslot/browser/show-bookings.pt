@@ -6,34 +6,34 @@
 <body>
   <div metal:fill-slot="main">
     <tal:main-macro metal:define-macro="main"
-               tal:define="bookedin context/isCurrentUserSignedUpForAnySlot;">
+               tal:define="sessions view/getSessionsCurrentUserIsSignedUpFor;">
       
       <h2 class="booking-page-title"><span tal:replace="context/Title" /> - Cancel your booking</h2>
       
 	<form method="post" name="ehs-manage-bookings"
               tal:attributes="action string:${context/absolute_url}/@@cancel-reservation;">
           <div class="documentContent">
-	    <tal:booked-in condition="bookedin">
+	    <tal:booked-in condition="sessions">
 	        <p>To cancel your booking, select a session and click the "Cancel selected session" button.</p>
-  	        <p>You are signed up for the following session:</p>
+  	        <p>You are signed up for the following session for your course:</p>
  	        <ul class="visualNoMarker ehs-current-bookings-list">
-                   <tal:sessions tal:repeat="slot context/getSlotsCurrentUserIsSignedUpFor">
+                   <tal:sessions tal:repeat="session sessions">
                    <li>
-  		      <input type="checkbox" name="selectedSlot" tal:attributes="value slot/UID; id slot/UID;" />
-                      <label for="slot" tal:content="slot/getLabel"
-                             tal:attributes="for slot/UID;">Label</label>
+  		      <input type="checkbox" name="selectedSlot" tal:attributes="value session/UID; id session/UID;" />
+                      <label for="session" tal:content="session/getLabel"
+                             tal:attributes="for session/UID;">Label</label>
                    </li>
  	           </tal:sessions>
 	        </ul>
             </tal:booked-in>
-            <tal:not-booked-in condition="not:bookedin">
-   	        <p>You are not booked into any upcoming session.</p>
+            <tal:not-booked-in condition="not:sessions">
+   	        <p>You are not booked into any upcoming session for your course.</p>
             </tal:not-booked-in>
           </div>
 	      
 	<div class="ehs-buttons">
           <input type="hidden" value="1" name="form.submitted" />
-          <input tal:condition="context/isCurrentUserSignedUpForAnySlot"
+          <input tal:condition="sessions"
                  type="submit" value="Cancel selected session" name="form.button.Submit" />
 	  <a href="#" tal:attributes="href string:${context/absolute_url}" id="return-to-booking">Return to booking page</a>
           <a href="#" tal:attributes="href view/logout_url;">Return to Step 4: Enrol</a>

@@ -1,4 +1,5 @@
 import csv
+import datetime
 from StringIO import StringIO
 from DateTime import DateTime
 
@@ -169,16 +170,23 @@ class SignupSheet(folder.ATFolder):
         for (id, obj) in self.contentItems():
             obj.removeAllPeople()
         
-    def exportToCSV(self):
+    def exportToCSV(self, faculty=[], campus=[], startDate=None, endDate=None,
+                    sortOrder=[]):
         buffer = StringIO()
         writer = csv.writer(buffer, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         writer.writerow(config.EHS_CSV_EXPORT_FORMAT)
 
         for day in self.getDays(all=True):
-            for session in day.getTimeSlots():
-                for person in session.getPeople():
-                    writer.writerow(self.buildCSVRow(day, session, person))
+            thisDay = datetime.date.fromtimestamp(day.getRawDate().timeTime())
+            #If either dates are None, then our check passes.  Both checks
+            #of upper and lower bounds need to pass to check the Day.
+            if (startDate is None or thisDay >= startDate) and \
+               (endDate is None or thisDay <= endDate):
+                for session in day.getTimeSlots(faculty or ''):
+                    if campus == [] or session.campus in campus:
+                        for person in session.getPeople():
+                            writer.writerow(self.buildCSVRow(day, session, person))
                     
         result = buffer.getvalue()
         buffer.close()
@@ -190,7 +198,7 @@ class SignupSheet(folder.ATFolder):
                 day.getDate(),
                 session.getName(),
                 session.getTimeRange(),
-                'NOT AVAILABLE YET', #person.getStatus(),
+                person.getCourseStatus(),
                 person.getStudentNumber(),
                 person.getCourseCode(),
                 person.getAbbrevCourseTitle(),
@@ -201,17 +209,16 @@ class SignupSheet(folder.ATFolder):
                 person.getMobilePhoneNumber() or '',
                 person.getEmail() or '',
                 person.getPersonalEmail() or '',
-                person.getSubjectInfo() and 'Yes' or 'No',
-                person.getDifficultyWithEStudent() and 'Yes' or 'No',
-                person.getIntendToApplyForAdvancedStanding() and 'Yes' or 'No',
-                person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
-                                                                    or 'No',
+                person.getSubjectInfo() != '0' and 'Yes' or 'No',
+         person.getDifficultyWithEStudent() != '0' and 'Yes' or 'No',
+         person.getIntendToApplyForAdvancedStanding() != '0' and 'Yes' or 'No',
+         person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
+                                                             or 'No',
                 person.getAdvancedStandingApproved() == 'Y' and 'Yes' or 'No',
                 person.getIsInternational() == 'Y' and 'Yes' or 'No',
                 person.getSanctions(),
                 person.getNumberSubjectsEnrolled(),
                ]
-        print row
         return row
     
     def isCurrentUserSignedUpOrWaitingForAnySlot(self):
@@ -225,8 +232,8 @@ class SignupSheet(folder.ATFolder):
         username = self.getCurrentUsername()
         return self.isUserSignedUpForAnySlot(username)
     
-    def isUserSignedUpForAnySlot(self, username):
-        return (len(self.getSlotsUserIsSignedUpFor(username)) > 0)
+    def isUserSignedUpForAnySlot(self, student_details):
+        return (len(self.getSlotsUserIsSignedUpFor(student_details)) > 0)
 
     def isCurrentUserWaitingForAnySlot(self):
         username = self.getCurrentUsername()
@@ -239,18 +246,21 @@ class SignupSheet(folder.ATFolder):
         username = self.getCurrentUsername()
         return self.getSlotsUserIsSignedUpFor(username)
 
-    def getSlotsUserIsSignedUpFor(self, username):
-        today = DateTime().earliestTime()
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', id=username, review_state='signedup', 
-                                                               path=self.getPath())
+    def getSlotsUserIsSignedUpFor(self, student_details):
+        brains = self.portal_catalog.unrestrictedSearchResults(
+                                portal_type='Person', 
+                                id=student_details['studentLoginId'],
+                                review_state='signedup', 
+                                path=self.getPath())
 
         slots = []
         for brain in brains:
             person = brain.getObject()
-            timeSlot = person.aq_parent
-            day = timeSlot.aq_parent
-            if day.getDate() >= today:
-                slots.append(timeSlot)
+            if False not in [person[field] == student_details[field] \
+                            for field in config.EHS_UNIQUE_FIELD_COMBO]:
+                timeSlot = person.aq_parent
+                if not timeSlot.isInThePast():
+                    slots.append(timeSlot)
                 
         return slots
 

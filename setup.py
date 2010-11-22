@@ -42,6 +42,8 @@ setup(name='uwosh.timeslot',
       install_requires=['setuptools',
                         'collective.monkeypatcher>=1.0',
                         'collective.easytemplate',
+                        'plone.directives.form',
+                        'collective.z3cform.datepicker',
                         # -*- Extra requirements: -*-
                         ],
       tests_require=tests_require,

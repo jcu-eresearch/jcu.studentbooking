@@ -6,7 +6,7 @@ from Products.ATContentTypes.content import schemata
 
 from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import IDay, ICloneable
-from uwosh.timeslot.config import PROJECTNAME
+from uwosh.timeslot.config import PROJECTNAME, CAMPUS_LIST
 from DateTime import DateTime
 
 DaySchema = folder.ATFolderSchema.copy() + atapi.Schema((

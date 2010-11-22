@@ -101,6 +101,16 @@ HiddenPersonSchema = atapi.Schema((
         widget=atapi.IntegerWidget(label=_(u'Course Year'),),
     ),
 
+    atapi.StringField('courseStatus',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Course Status'),),
+    ),
+
+    atapi.StringField('courseFullName',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Course Full Name'),),
+    ),
+
     atapi.StringField('abbrevCourseTitle',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Abbreviated Course Title'),),
@@ -182,6 +192,8 @@ class Person(base.ATCTContent):
     studentLoginId = atapi.ATFieldProperty('studentLoginId') 
     courseCode = atapi.ATFieldProperty('courseCode')
     courseYear = atapi.ATFieldProperty('courseYear')
+    courseStatus = atapi.ATFieldProperty('courseStatus')
+    courseFullName = atapi.ATFieldProperty('courseFullName')
     abbrevCourseTitle = atapi.ATFieldProperty('abbrevCourseTitle')
     defaultCampus = atapi.ATFieldProperty('defaultCampus')
     studentSurname = atapi.ATFieldProperty('studentSurname')

@@ -32,21 +32,20 @@
 	  <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"></div>
 	  
 	      <tal:courses repeat="course view/courses">
-                  <tal:course define="course_code course/courseCode;
-                                      course_year course/courseYear;
-                                      default_campus course/defaultCampus;
-                                      id string:selectCourse-${repeat/course/index};
-                                      value python:view.buildCourseIdentifier(course);
-                                      ">
+                  <tal:course define="
+                             id string:selectCourse-${repeat/course/index};
+                             value python:view.buildCourseIdentifier(course);
+                             ">
 			<input class="noborder" type="radio" name="selectCourse" value="1" id="selectCourse_1" 
                                tal:attributes="id id;
                                                value value;
                                                checked python:value==request.form.get(selectionField) or view.courseCount == 1;" />
 
 			<label for="selectCourse_1" tal:attributes="for id;">
-                            <span tal:replace="course_code">12345</span> - <span tal:replace="course/courseFullName">Bachelor of Information Technology</span> 
-                             (<span tal:replace="course_year">2008</span>; 
-                              <span tal:replace="default_campus">TSV</span>)
+                            <span tal:replace="course/courseCode">12345</span> - <span tal:replace="course/courseFullName">Bachelor of Information Technology</span> 
+                             (<span tal:replace="course/courseYear">2008</span>; 
+                              <span tal:replace="course/defaultCampus">TSV</span>;
+                              <span tal:replace="course/courseStatus" />)
                         </label>
 
 			<br />
@@ -55,7 +54,7 @@
 
 	</div> 
 
-        <div style="margin-bottom:1em;">
+        <div class="ehs-buttons">
 	  <input type="submit" value="Select" name="form.button.Submit" />
 	  <input type="hidden" value="1" name="form.submitted" />
           <a href="#" tal:attributes="href string:${context/absolute_url}" 

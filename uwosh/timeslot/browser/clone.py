@@ -97,8 +97,14 @@ class CloneForm(formbase.PageForm):
                 
     def createNewDay(self, date, contents):
         #id = date.strftime('%a-%b.-%d-%Y')
-        id = date.strftime('%a-%d-%B-%Y')
-        id = queryUtility(IURLNormalizer).normalize(id)
+        original_id = date.strftime('%a-%d-%B-%Y')
+        original_id = queryUtility(IURLNormalizer).normalize(original_id)
+        id = original_id
+
+        counter = 1
+        while id in self.parent:
+            id = original_id + '-clone-' + str(counter)
+
         self.parent.invokeFactory('Day', id, date=date)            
         newDay = self.parent[id]
         newDay.manage_pasteObjects(contents)

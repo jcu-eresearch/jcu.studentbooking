@@ -56,8 +56,9 @@
                 <div class="discreet">You will be able to select which course to book for after this step.</div>
                 <ul tal:repeat="record view/student_records">
                  <li><span tal:replace="record/courseCode">12345</span> - <span tal:replace="record/courseFullName">Bachelor of Information Technology</span> 
-                             (<span tal:replace="record/courseYear">2008</span>; 
-                              <span tal:replace="record/defaultCampus">TSV</span>)
+                         (<span tal:replace="record/courseYear">2008</span>; 
+                          <span tal:replace="record/defaultCampus">TSV</span>;
+                          <span tal:replace="record/courseStatus" />)
                  </li>
                 </ul>
              </dd>

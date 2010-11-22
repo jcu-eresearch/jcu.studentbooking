@@ -42,6 +42,9 @@ background-color: #F0F0F0;
 #contentview-contentrules, #contentview-redirection, #contentview-theme {
 display:none;
 }
+#formfield-form-widgets-faculty span.option {
+display:block;
+}
 
 ul.collapsibleList.expanded
 {

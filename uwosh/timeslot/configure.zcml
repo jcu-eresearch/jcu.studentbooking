@@ -3,9 +3,11 @@
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:monkey="http://namespaces.plone.org/monkey"
+    xmlns:grok="http://namespaces.zope.org/grok"
     i18n_domain="uwosh.timeslot">
 
-    <include package="collective.monkeypatcher" />
+    <includeDependencies package="." />
+    <include package="five.grok" />
 
     <monkey:patch
         description="This makes validating required Achetypes fields simpler."
@@ -77,4 +79,8 @@
     <utility name="BookingViewer" factory=".sharing.BookingViewerRole"/>
     <utility name="BookingStaff" factory=".sharing.BookingStaffRole"/>
     <utility name="BookingManager" factory=".sharing.BookingManagerRole"/>
+
+    <!-- Wait until after everything's sorted before grokking -->
+    <grok:grok package="." />
+
 </configure>

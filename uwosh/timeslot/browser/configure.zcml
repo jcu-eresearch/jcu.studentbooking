@@ -24,14 +24,14 @@
         layer="jcu.theme.browser.interfaces.IThemeSpecific"
         />
 
-    <browser:page
+    <!-- <browser:page
       for="..interfaces.ISignupSheet"
       name="manager-summary"
       template="managersummary.pt"
       allowed_interface=".choosetimeslot.IChooseTimeSlot"
       permission="uwosh.timeslot.ViewBookings"
       />
-      
+
     <browser:page
       for="..interfaces.ISignupSheet"
       name="export-to-csv"
@@ -40,11 +40,20 @@
       permission="uwosh.timeslot.ViewBookings"
       />
     
-    <browser:page
+     <browser:page
         for="..interfaces.ISignupSheet"
         name="remove-all-people"
         class=".removeallpeople.RemoveAllPeopleForm"
         permission="uwosh.timeslot.ManageBookings"
+        /> -->
+
+
+    <browser:page
+        for="..interfaces.ISignupSheet"
+        name="send-reminders"
+        class=".sendreminders.SendRemindersView"
+        allowed_interface=".sendreminders.ISendRemindersView"
+        permission="cmf.ManagePortal"
         />
 	
     <browser:pages

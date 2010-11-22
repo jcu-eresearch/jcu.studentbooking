@@ -11,7 +11,7 @@ from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot import config, mail
 from uwosh.timeslot.browser.base import BaseBrowserView
 from uwosh.timeslot.content.person import ExposedPersonSchema, DummyExposedPersonSchema
-from uwosh.timeslot.util import explodeCourseIdentifier
+from uwosh.timeslot import util
 
 class IChooseTimeSlot(Interface):
     pass
@@ -65,15 +65,17 @@ class ChooseTimeSlot(BaseBrowserView):
                self.errors['slotSelection'] = "Please select one enrolment session to book into."
            else:           
                timeSlot = self.getBookingSessionByUid(timeSlotUid[0])
-
+               existing = timeSlot.get(self.student_details['studentLoginId'])
                #XXX Need more checks here to make sure the student
                #can sign up for the given slot...
                if not timeSlot \
                   or timeSlot.isFull() \
                   or timeSlot.isInThePast() \
                   or timeSlot.getFaculty() != self.student_details['facultyCode'] \
-                  or self.context.isUserSignedUpForAnySlot(self.student_details['studentLoginId']):
+                  or self.context.isUserSignedUpForAnySlot(self.student_details):
                    self.errors['slotSelection'] = "Your could not be signed up for your selected session.  It may have been cancelled or become full.  Please select a different session."
+               elif existing:
+                   self.errors['slotSelection'] = "You are already attending this enrolment session for %s.  Please choose another session." % existing.getCourseFullName()
 
            #If we don't have any errors, we're good.  Otherwise, we just fall through to displaying the form.
            if len(self.errors) == 0:
@@ -141,7 +143,7 @@ class ChooseTimeSlot(BaseBrowserView):
 
            self.authenticateForm()
 
-           course_identifier = explodeCourseIdentifier(selectCourse)
+           course_identifier = util.explodeCourseIdentifier(selectCourse)
            course_identifier_values = course_identifier.values()
            marker_value = True
            valid_courses = [len([i for i in course_identifier_values if i not in result.values()]) or marker_value
@@ -216,11 +218,26 @@ class ChooseTimeSlot(BaseBrowserView):
 
 
     #Helper methods for our views
+    def getSessionsCurrentUserIsSignedUpFor(self):
+        sessions = None
+        student_details = self.getStudentDetailsFromSdm()
+        if student_details:
+            sessions = self.context.getSlotsUserIsSignedUpFor(student_details)
+        return sessions
+
+    def isCurrentUserSignedUpForSlot(self, session):
+        result = False
+        student_details = self.getStudentDetailsFromSdm()
+        if student_details:
+            person = session.get(student_details['studentLoginId'])
+            if person:
+                result = False not in [person[field] == student_details[field] \
+                                for field in config.EHS_UNIQUE_FIELD_COMBO]
+
+        return result
+
     def buildCourseIdentifier(self, selection, delimiter='-'):
-        '''Our course identifier is used within pages to distinctly 
-           identify a course based on code, year, and campus.  Other
-           factors may need to be included here'''
-        return delimiter.join( (selection['courseCode'], str(selection['courseYear']), selection['defaultCampus']) )
+        return util.buildCourseIdentifier(selection, delimiter)
 
     def getSdmSession(self):
        '''Get the Session Data Manager's session for our current user'''
@@ -279,7 +296,10 @@ class ChooseTimeSlot(BaseBrowserView):
            and not a booking staff member (or signed up for any slot),
            then they should see the fields'''
         member = self.getAuthenticatedMember()
-        if self.isBookingStaff() or self.context.isUserSignedUpForAnySlot(member.getId()):
+        student_details = self.getStudentDetailsFromSdm()
+        if self.isBookingStaff() or \
+           (student_details is not None and \
+            self.context.isUserSignedUpForAnySlot(student_details)):
             return False
         else:
             return True

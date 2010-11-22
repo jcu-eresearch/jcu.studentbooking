@@ -16,7 +16,7 @@ def sendNotificationEmail(context, person, \
     emailSpecs = config.EHS_EMAIL_TYPES[email_type]
 
     #Get the right type of email field's contents here
-    email_body = context[emailSpecs['bodyField']].getRaw()
+    email_body = context[emailSpecs['bodyField']].getRaw().decode('utf-8')
 
     try:
         templateContext = getTemplateContext(person)
@@ -27,7 +27,7 @@ def sendNotificationEmail(context, person, \
         #probably.  They should really check their syntax.
         context.plone_log('Warning: problem with EHS email template.')
      
-    mto = [person.getEmail(),'david@davidjb.com',]
+    mto = [person.getEmail(),'david@davidjb.com']
     personalEmail = person.getPersonalEmail()
     if personalEmail:  mto.append(personalEmail)
 
@@ -37,32 +37,11 @@ def sendNotificationEmail(context, person, \
 
     mh = getToolByName(context, 'MailHost')
     mh.secureSend(templated_body, mto=mto, mfrom=mfrom, \
-            subject=msubject, subtype='html')
+            subject=msubject, charset="utf-8", subtype='html')
 
     #Oh Plone 4 where art thou?
     #mh.send(templated_body, mto=mto, mfrom=mfrom, \
     #        subject=msubject, encode=None, \
     #        immediate=True, charset='utf8', msg_type='text/html')
-    print "Mail sent to "+str(mto)
+    context.plone_log("Mail sent to "+str(mto))
 
-def sendReminderEmails(context):
-    '''This script is to be run once every day and sends a reminder
-       email to each and every student with a booking on the next day.
-       So, if we run Monday, we should be sending for Wednesday's sessions.'''
-    portal = getSite()
-    #Figure out which day we're sending for
-
-    #DateTime()
-
-    #Get all sessions on the given day
-  
-#   for session in sessions:
-#       for person in session:
-#           try:
-#               mail.sendNotificationEmail(context=context,
-#                                     person=person,
-#                                     request=request,
-#                                     email_type=config.EHS_REMINDER_EMAIL)     #           except:
-#               pass
-#   
-#   plone_log('X reminder emails sent).

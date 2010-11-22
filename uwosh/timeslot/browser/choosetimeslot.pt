@@ -151,7 +151,11 @@
             (Required)
           </span>
           <div id="slotSelection_help" class="formHelp" tal:condition="not:isBookingStaff"><span tal:condition="showInputFields">Select the session that you would like to book into. </span><strong>Selected course:</strong>
-                   <span tal:replace="student_details/courseCode" /> - <span tal:replace="student_details/courseFullName" /> (<span tal:replace="student_details/courseYear" />; <span tal:replace="student_details/defaultCampus" />)
+                   <span tal:replace="student_details/courseCode" /> - 
+                   <span tal:replace="student_details/courseFullName" /> 
+                  (<span tal:replace="student_details/courseYear" />; 
+                   <span tal:replace="student_details/defaultCampus" />; 
+                   <span tal:replace="student_details/courseStatus" />)
           </div>
           
         <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>
@@ -194,14 +198,14 @@
 		<td colspan="5" tal:attributes="colspan columns;">There are no sessions available on this date.</td>
 	      </tr>
 	     <tal:rows repeat="timeSlot timeSlots">
-	      <tr tal:define="isUserSignedUp timeSlot/isCurrentUserSignedUpForThisSlot;
+	      <tr tal:define="isUserSignedUp python:view.isCurrentUserSignedUpForSlot(timeSlot);
                               isChecked python:view.checkTimeSlot(timeSlot);
                               isFull timeSlot/isFull;"
                   tal:attributes="class string:${timeSlot/getStyleClass} users-session-${isUserSignedUp} session-selected-${isChecked};">
 		<td tal:condition="showSlotNames">
 		  <strong tal:content="timeSlot/name">Session Name</strong>
-		    <em tal:condition="timeSlot/isCurrentUserSignedUpForThisSlot"><strong>&rarr; Your session &larr;</strong></em>
-                    <span tal:condition="showEditLinks" class="discreet">
+		    <em tal:condition="isUserSignedUp"><strong>&rarr; Your session &larr;</strong></em>
+                    <span tal:condition="isBookingStaff" class="discreet">
                     (<span tal:replace="timeSlot/getFacultyAbbreviation" />)
                     </span>
 		</td>

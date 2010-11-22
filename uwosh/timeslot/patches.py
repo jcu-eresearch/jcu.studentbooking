@@ -18,3 +18,7 @@ def patched_TemplatedTextField_get(self, instance, **kwargs):
         return text
     else:
         return self._getCooked(instance, text)
+
+def patched_z3cform_layout_call(self):
+    self.update()
+    return
