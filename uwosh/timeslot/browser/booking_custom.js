@@ -52,7 +52,7 @@ jq(document).ready(function() {
 		   } 
 	    });
 
-      jq('#ehs-select-course, #ehs-booking-results-link, #contentview-manager-summary a').prepOverlay({
+      jq('#ehs-select-course, #ehs-booking-results-link, #contentview-ehs-reporting a').prepOverlay({
 	    subtype:'ajax',
 	    filter: '#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info,dl.portalMessage.warning',
 	    closeselector: 'a#return-to-booking,input[name="form.buttons.cancel"]',

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
  <javascript cacheable="True" compression="safe" cookable="True"
-    enabled="True": id="++resource++booking_custom.js" inline="False"
+    enabled="True" id="++resource++booking_custom.js" inline="False"
     expression="python: here.portal_type == 'Signup Sheet'"
 />
 </object>

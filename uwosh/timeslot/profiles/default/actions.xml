@@ -8,10 +8,10 @@
  <object name="object" meta_type="CMF Action Category">
   <property name="title"></property>
   
-  <object name="manager-summary" meta_type="CMF Action">
-   <property name="title">Manager Summary</property>
+  <object name="ehs-reporting" meta_type="CMF Action">
+   <property name="title">Reporting</property>
    <property name="description"></property>
-   <property name="url_expr">string:@@manager-summary</property>
+   <property name="url_expr">string:@@reporting</property>
    <property name="icon_expr"></property>
    <property
       name="available_expr">python:object.Type() == 'Signup Sheet'</property>

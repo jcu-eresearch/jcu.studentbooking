@@ -27,7 +27,7 @@ def sendNotificationEmail(context, person, \
         #probably.  They should really check their syntax.
         context.plone_log('Warning: problem with EHS email template.')
      
-    mto = [person.getEmail(),'david@davidjb.com']
+    mto = [person.getEmail(),]
     personalEmail = person.getPersonalEmail()
     if personalEmail:  mto.append(personalEmail)
 

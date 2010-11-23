@@ -63,14 +63,14 @@ class IManagerReportExportFormSchema(form.Schema):
 
 class ManagerReportExportForm(form.SchemaForm):
 #    implements(IWrappedForm)
-    grok.name('manager-summary')
+    grok.name('reporting')
     grok.require('uwosh.timeslot.ViewBookings')
     grok.context(ISignupSheet)
  
     schema = IManagerReportExportFormSchema
     ignoreContext = True
-    label = _(u"Manager Summary: Report Export")
-    description = _(u"Select options below to output a report of session sign ups")
+    label = _(u"Reporting: Record Export")
+    description = _(u"Select options below to output a report of session registrations.")
     output = None
 
     def render(self):

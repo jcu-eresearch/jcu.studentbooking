@@ -187,7 +187,7 @@ class SignupSheet(folder.ATFolder):
                     if campus == [] or session.campus in campus:
                         for person in session.getPeople():
                             writer.writerow(self.buildCSVRow(day, session, person))
-                    
+
         result = buffer.getvalue()
         buffer.close()
 
