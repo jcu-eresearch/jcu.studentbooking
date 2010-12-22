@@ -46,7 +46,7 @@ jq(document).ready(function() {
 	    config:{mask:{color:'#000'},
 		    onBeforeClose:function(){
 				     if (jq("div.overlay dl.portalMessage:contains('was cancelled successfully')").length == 1) {
-					location.reload();
+					window.location.href = window.location.href;
 				     }
 				  } 
 		   } 

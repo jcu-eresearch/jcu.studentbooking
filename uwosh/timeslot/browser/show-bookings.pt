@@ -36,7 +36,6 @@
           <input tal:condition="sessions"
                  type="submit" value="Cancel selected session" name="form.button.Submit" />
 	  <a href="#" tal:attributes="href string:${context/absolute_url}" id="return-to-booking">Return to booking page</a>
-          <a href="#" tal:attributes="href view/logout_url;">Return to Step 4: Enrol</a>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
         </div>
 

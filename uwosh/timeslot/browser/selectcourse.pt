@@ -42,10 +42,11 @@
                                                checked python:value==request.form.get(selectionField) or view.courseCount == 1;" />
 
 			<label for="selectCourse_1" tal:attributes="for id;">
-                            <span tal:replace="course/courseCode">12345</span> - <span tal:replace="course/courseFullName">Bachelor of Information Technology</span> 
-                             (<span tal:replace="course/courseYear">2008</span>; 
-                              <span tal:replace="course/defaultCampus">TSV</span>;
-                              <span tal:replace="course/courseStatus" />)
+                            <span tal:replace="course/crs_cd">12345</span> - <span tal:replace="course/crs_full_nm">Bachelor of Information Technology</span> 
+                             (<span tal:replace="course/sprd_code">SP2</span>;
+                              <span tal:replace="course/crs_year">2008</span>; 
+                              <span tal:replace="course/campus">TSV</span>;
+                              <span tal:replace="course/crs_status" />)
                         </label>
 
 			<br />
@@ -59,8 +60,6 @@
 	  <input type="hidden" value="1" name="form.submitted" />
           <a href="#" tal:attributes="href string:${context/absolute_url}" 
                       tal:condition="view/has_selection" id="return-to-booking">Return to booking page</a>
-          <a href="#" tal:attributes="href view/logout_url;"
-                      tal:condition="view/has_selection">Return to Step 4: Enrol</a>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 	</div>
 

@@ -198,26 +198,28 @@ class SignupSheet(folder.ATFolder):
                 day.getDate(),
                 session.getName(),
                 session.getTimeRange(),
-                person.getCourseStatus(),
-                person.getStudentNumber(),
-                person.getCourseCode(),
-                person.getAbbrevCourseTitle(),
-                person.getDefaultCampus(),
-                person.getStudentSurname(),
-                person.getStudentGivenName(),
-                person.getDaytimeContactNumber(),
-                person.getMobilePhoneNumber() or '',
-                person.getEmail() or '',
-                person.getPersonalEmail() or '',
+                person.crs_status,
+                person.stu_id,
+                person.crs_cd,
+                person.crs_nm,
+                person.sprd_code,
+                person.crs_year,
+                person.campus,
+                person.surname,
+                person.gvn_name,
+                person.home_ph,
+                person.mob_ph or '',
+                person.jcu_email or '',
+                person.pers_email or '',
                 person.getSubjectInfo() != '0' and 'Yes' or 'No',
          person.getDifficultyWithEStudent() != '0' and 'Yes' or 'No',
          person.getIntendToApplyForAdvancedStanding() != '0' and 'Yes' or 'No',
          person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
                                                              or 'No',
-                person.getAdvancedStandingApproved() == 'Y' and 'Yes' or 'No',
-                person.getIsInternational() == 'Y' and 'Yes' or 'No',
-                person.getSanctions(),
-                person.getNumberSubjectsEnrolled(),
+                person.adv_std == 'Y' and 'Yes' or 'No',
+                person.intnl_stu == 'Y' and 'Yes' or 'No',
+                person.sanctions,
+                person.no_subjects_enr,
                ]
         return row
     
@@ -249,7 +251,7 @@ class SignupSheet(folder.ATFolder):
     def getSlotsUserIsSignedUpFor(self, student_details):
         brains = self.portal_catalog.unrestrictedSearchResults(
                                 portal_type='Person', 
-                                id=student_details['studentLoginId'],
+                                id=student_details['login_id'],
                                 review_state='signedup', 
                                 path=self.getPath())
 

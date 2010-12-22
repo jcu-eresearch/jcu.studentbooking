@@ -93,6 +93,14 @@
         permission="uwosh.timeslot.BookAnotherUserIn"
         template="bookuser.pt"
         />
+
+    <!-- For debugging purposes -->
+    <browser:page
+        for="..interfaces.ISignupSheet"
+        name="debug"
+        class=".debug.BookingDebugView"
+        permission="cmf.ManagePortal"
+        />
  
     <browser:page
       for="..interfaces.ISignupSheet"

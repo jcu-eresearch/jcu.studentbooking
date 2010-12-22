@@ -50,9 +50,6 @@
            <a id="ehs-manage-bookings"
               tal:attributes="href string:${context_url}/@@show-bookings">Cancel an existing booking</a></li>
 	<li tal:condition="not:isBookingStaff">
-           <a id="ehs-return-to-step4"
-              tal:attributes="href string:${context_url}/logout">Return to Step 4: Enrol</a></li>
-	<li tal:condition="not:isBookingStaff">
            <a id="ehs-select-course"
               tal:attributes="href string:${context_url}/@@select-course">Select a different course</a></li>
 	<li tal:condition="isBookingStaff">
@@ -76,11 +73,12 @@
             (Required)
           </span>
           <div id="slotSelection_help" class="formHelp" tal:condition="not:isBookingStaff"><span tal:condition="showInputFields">Select the session that you would like to book into. </span><strong>Selected course:</strong>
-                   <span tal:replace="student_details/courseCode" /> - 
-                   <span tal:replace="student_details/courseFullName" /> 
-                  (<span tal:replace="student_details/courseYear" />; 
-                   <span tal:replace="student_details/defaultCampus" />; 
-                   <span tal:replace="student_details/courseStatus" />)
+                   <span tal:replace="student_details/crs_cd" /> - 
+                   <span tal:replace="student_details/crs_full_nm" /> 
+                  (<span tal:replace="student_details/sprd_code">SP2</span>;
+                   <span tal:replace="student_details/crs_year" />; 
+                   <span tal:replace="student_details/campus" />; 
+                   <span tal:replace="student_details/crs_status" />)
           </div>
           
         <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>

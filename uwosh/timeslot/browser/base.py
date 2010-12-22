@@ -49,19 +49,13 @@ class BaseBrowserView(BrowserView):
         mapper_class = self.ehs_mapper.class_
 
         query = self.wrapper.session.query(mapper_class)
-#        if search_student_id and search_login_id:
-#            query = query.filter(or_(mapper_class.studentLoginId == member_id, mapper_class.studentNumber == member_id))
         if search_student_id:
-            query = query.filter(mapper_class.studentNumber == member_id)
+            query = query.filter(mapper_class.stu_id == member_id)
         elif search_login_id:
-            query = query.filter(mapper_class.studentLoginId == member_id)
+            query = query.filter(mapper_class.login_id == member_id)
         else:
             #Bail.  We clearly don't want to search anything.
             query = None
-
-        #if conditions:
-        #    for condition in conditions:
-        #        query = query.filter( getattr(mapper_class, condition) == conditions[condition])
 
         results = None
         if query:

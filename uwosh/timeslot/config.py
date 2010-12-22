@@ -15,10 +15,9 @@ EHS_BOOKING_ABSOLUTE_NAME = EHS_BOOKING_TABLE_NAME+'.'+EHS_BOOKING_DB_SCHEMA
 
 EHS_BOOKING_COURSE_IDENTIFIER = "EHS_BOOKING_COURSE_IDENTIFIER"
 
-EHS_UNIQUE_FIELD_COMBO = ['studentNumber',
-                          'courseCode',
-                          'courseYear',
-                          'courseStatus']
+EHS_UNIQUE_FIELD_COMBO = ['stu_id',
+                          'ssp_no',
+                          'ssp_att_no',]
 
 EHS_TEMPLATING_ENGINE = Engine()
 
@@ -68,6 +67,8 @@ EHS_CSV_EXPORT_FORMAT = \
      'Student Number',
      'Course Code',
      'Abbrev Course Title',
+     'Study Period',
+     'Commencement Year',
      'Default Campus',
      'Student Surname',
      'Student Given Name',

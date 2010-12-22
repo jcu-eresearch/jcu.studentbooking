@@ -51,7 +51,7 @@ class ChooseTimeSlot(BaseBrowserView):
                if field_validation: self.errors[field.getName()] = field_validation
 
            #Special case for personal email address
-           if "confirmPersonalEmail" not in self.errors and self.request.form.get('personalEmail') != self.request.form.get('confirmPersonalEmail'):
+           if "confirmPersonalEmail" not in self.errors and self.request.form.get('pers_email') != self.request.form.get('confirmPersonalEmail'):
                self.errors['confirmPersonalEmail'] = "Confirmation email address does not match.  Please check your input."
            #Special case for advanced standing
            if self.request.form.get('intendToApplyForAdvancedStanding') is '1' and self.request.form.get('submittedApplicationForAdvancedStanding') is None:
@@ -65,17 +65,17 @@ class ChooseTimeSlot(BaseBrowserView):
                self.errors['slotSelection'] = "Please select one enrolment session to book into."
            else:           
                timeSlot = self.getBookingSessionByUid(timeSlotUid[0])
-               existing = timeSlot.get(self.student_details['studentLoginId'])
+               existing = timeSlot.get(self.student_details['login_id'])
                #XXX Need more checks here to make sure the student
                #can sign up for the given slot...
                if not timeSlot \
                   or timeSlot.isFull() \
                   or timeSlot.isInThePast() \
-                  or timeSlot.getFaculty() != self.student_details['facultyCode'] \
+                  or timeSlot.getFaculty() != self.student_details['faculty_code'] \
                   or self.context.isUserSignedUpForAnySlot(self.student_details):
                    self.errors['slotSelection'] = "Your could not be signed up for your selected session.  It may have been cancelled or become full.  Please select a different session."
                elif existing:
-                   self.errors['slotSelection'] = "You are already attending this enrolment session for %s.  Please choose another session." % existing.getCourseFullName()
+                   self.errors['slotSelection'] = "You are already attending this enrolment session for %s.  Please choose another session." % existing.crs_full_nm
 
            #If we don't have any errors, we're good.  Otherwise, we just fall through to displaying the form.
            if len(self.errors) == 0:
@@ -84,7 +84,7 @@ class ChooseTimeSlot(BaseBrowserView):
                    #They might have changed phone/email/etc and we need their
                    #responses included.
                    self.student_details.update(self.request.form)
-                   person = timeSlot.invokeFactory('Person', self.student_details['studentLoginId'], **self.student_details)
+                   person = timeSlot.invokeFactory('Person', self.student_details['login_id'], **self.student_details)
 
                    try: 
                        #EMAIL: Send confirmation email to our user
@@ -108,14 +108,11 @@ class ChooseTimeSlot(BaseBrowserView):
             #object to inject them onto the page.
             if self.student_details is not None:
                 for field_key in ExposedPersonSchema.keys():
-                    if field_key == "confirmPersonalEmail":
-                        self.request.form.setdefault(field_key, self.student_details.get('personalEmail'))
-                    else:
-                        self.request.form.setdefault(field_key, self.student_details.get(field_key))
+                    self.request.form.setdefault(field_key, self.student_details.get(field_key))
           
         #Data reconfiguration before our page loads 
         if self.student_details is not None:
-            self.faculty_code = self.student_details['facultyCode'] 
+            self.faculty_code = self.student_details['faculty_code'] 
             self.faculty_name = config.FACULTY_LIST.getValue(self.faculty_code)
         else:
             self.faculty_code = ''
@@ -136,6 +133,10 @@ class ChooseTimeSlot(BaseBrowserView):
         self.courses = self.queryStudentDetails(self.getAuthenticatedMember().getId(), as_dict=True, search_student_id=False, search_login_id=True)
         self.has_selection = False
 
+        if self.isBookingStaff():
+            self.context.request.response.redirect(self.context.absolute_url())
+            return
+
         selectCourse = self.request.form.get('selectCourse')
         if self.request.form.get('form.submitted') == '1' and \
            self.request.form.get('form.button.Submit') == 'Select' and \
@@ -144,16 +145,24 @@ class ChooseTimeSlot(BaseBrowserView):
            self.authenticateForm()
 
            course_identifier = util.explodeCourseIdentifier(selectCourse)
-           course_identifier_values = course_identifier.values()
            marker_value = True
-           valid_courses = [len([i for i in course_identifier_values if i not in result.values()]) or marker_value
-                            for result in self.courses]
+
+           valid_courses = [util.all(result) for result in [ \
+                              [str(course[key]) == course_identifier[key] \
+                              for key in course_identifier] for course in self.courses] \
+                           ] 
 
            if marker_value in valid_courses:
+               student_details = self.courses[valid_courses.index(marker_value)]
+              
+               #Convert keys to ascii since Plone needs this for the person creation 
+               student_details = dict((key.encode('ascii'),value) for (key,value) in student_details.items())
+
                #We're now sure the user is doing this course, then we can
                #save it now.  They might have been trying to haxx0r by
                #changing the input values.
-               session.set(config.EHS_BOOKING_COURSE_IDENTIFIER, self.courses[valid_courses.index(marker_value)])
+               session.set(config.EHS_BOOKING_COURSE_IDENTIFIER, 
+                           student_details)
 
                self.request.response.redirect(self.context.absolute_url())
                return
@@ -193,7 +202,7 @@ class ChooseTimeSlot(BaseBrowserView):
                 for slot in selectedSlots:
                     try:
                         booking_session = self.getBookingSessionByUid(slot)
-                        login_id = student_details['studentLoginId']
+                        login_id = student_details['login_id']
                         person = booking_session[login_id]
                         booking_session.manage_delObjects([login_id,])
   
@@ -229,7 +238,7 @@ class ChooseTimeSlot(BaseBrowserView):
         result = False
         student_details = self.getStudentDetailsFromSdm()
         if student_details:
-            person = session.get(student_details['studentLoginId'])
+            person = session.get(student_details['login_id'])
             if person:
                 result = False not in [person[field] == student_details[field] \
                                 for field in config.EHS_UNIQUE_FIELD_COMBO]
@@ -276,7 +285,7 @@ class ChooseTimeSlot(BaseBrowserView):
         student_details = self.getStudentDetailsFromSdm()
         booked_session = self.getBookedSession()
         if not booked_session or \
-           student_details['studentLoginId'] not in booked_session:
+           student_details['login_id'] not in booked_session:
             booked_session = None
         return booked_session
 

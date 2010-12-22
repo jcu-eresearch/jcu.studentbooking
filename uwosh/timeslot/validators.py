@@ -70,7 +70,7 @@ class SessionSizeIsOkayValidator:
         if instance:
             session_count = len(instance.getFolderContents())
             value_int = int(value)
-            if value_int < 1:
+            if value_int < 0:
                 return "Enter a valid capacity."
             elif value_int < session_count:
                 return "You already have " + str(session_count) + " student" + \

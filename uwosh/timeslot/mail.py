@@ -26,9 +26,10 @@ def sendNotificationEmail(context, person, \
         #We're in the poo here because someone broke the template,
         #probably.  They should really check their syntax.
         context.plone_log('Warning: problem with EHS email template.')
+        raise
      
-    mto = [person.getEmail(),]
-    personalEmail = person.getPersonalEmail()
+    mto = [person.jcu_email,]
+    personalEmail = person.pers_email
     if personalEmail:  mto.append(personalEmail)
 
     mfrom = "%s <%s>" % (portal.getProperty('email_from_name'),\

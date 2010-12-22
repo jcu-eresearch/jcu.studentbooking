@@ -13,7 +13,7 @@ from Products.CMFCore.permissions import View
 
 ExposedPersonSchema = atapi.Schema((
 
-    atapi.StringField('daytimeContactNumber',
+    atapi.StringField('home_ph',
         storage=atapi.AnnotationStorage(),
         required=True,
         widget=atapi.StringWidget(label=_(u'Daytime Contact Number'),
@@ -21,7 +21,7 @@ ExposedPersonSchema = atapi.Schema((
         validators = ('saneIsPhoneNumber')
     ),
 
-    atapi.StringField('mobilePhoneNumber',
+    atapi.StringField('mob_ph',
         storage=atapi.AnnotationStorage(),
         required=False,
         widget=atapi.StringWidget(label=_(u'Mobile Phone Number'),
@@ -29,7 +29,7 @@ ExposedPersonSchema = atapi.Schema((
         validators = ('saneIsPhoneNumber')
     ),
 
-    atapi.StringField('personalEmail',
+    atapi.StringField('pers_email',
         storage=atapi.AnnotationStorage(),
         required=False,
         widget=atapi.StringWidget(label=_(u'Personal E-Mail'),
@@ -81,65 +81,80 @@ ExposedPersonSchema = atapi.Schema((
 
 HiddenPersonSchema = atapi.Schema((
 
-    atapi.StringField('studentNumber',
+    atapi.StringField('stu_id',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Student Number'),),
     ),
 
-    atapi.StringField('studentLoginId',
+    atapi.StringField('login_id',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Student Login ID'),),
     ),
 
-    atapi.StringField('courseCode',
+    atapi.StringField('ssp_no',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.IntegerWidget(label=_(u'SSP Number'),),
+    ),
+
+    atapi.StringField('ssp_att_no',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.IntegerWidget(label=_(u'SSP ATT Number'),),
+    ),
+
+    atapi.StringField('crs_cd',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Course Code'),),
     ),
 
-    atapi.IntegerField('courseYear',
+    atapi.StringField('sprd_code',
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u'Study Period Code'),),
+    ),
+
+    atapi.IntegerField('crs_year',
         storage=atapi.AnnotationStorage(),
         widget=atapi.IntegerWidget(label=_(u'Course Year'),),
     ),
 
-    atapi.StringField('courseStatus',
+    atapi.StringField('crs_status',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Course Status'),),
     ),
 
-    atapi.StringField('courseFullName',
+    atapi.StringField('crs_full_nm',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Course Full Name'),),
     ),
 
-    atapi.StringField('abbrevCourseTitle',
+    atapi.StringField('crs_nm',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Abbreviated Course Title'),),
     ),
 
-    atapi.StringField('defaultCampus',
+    atapi.StringField('campus',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Default Campus'),),
     ),
 
-    atapi.StringField('studentSurname',
+    atapi.StringField('surname',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Surname'),),
     ),
 
-    atapi.StringField('studentGivenName',
+    atapi.StringField('gvn_name',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Given Name'),),
     ),
 
 
-    atapi.StringField('email',
+    atapi.StringField('jcu_email',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'E-Mail'),
                                   description=_(u'Your JCU email address')),
         validators = ('isEmail')
     ),
 
-    atapi.StringField('isInternational',
+    atapi.StringField('intnl_stu',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'International Student'),),
     ),
@@ -149,12 +164,12 @@ HiddenPersonSchema = atapi.Schema((
         widget=atapi.StringWidget(label=_(u'Sanctions'),),
     ),
 
-    atapi.StringField('advancedStandingApproved',
+    atapi.StringField('adv_std',
         storage=atapi.AnnotationStorage(),
         widget=atapi.StringWidget(label=_(u'Advanced Standing Approved?'),),
     ),
 
-    atapi.IntegerField('numberSubjectsEnrolled',
+    atapi.IntegerField('no_subjects_enr',
         storage=atapi.AnnotationStorage(),
         widget=atapi.IntegerWidget(label=_(u'Number of Subjects Enrolled In'),),
     ),
@@ -188,29 +203,32 @@ class Person(base.ATCTContent):
 
     title = atapi.ATFieldProperty('title')
 
-    studentNumber = atapi.ATFieldProperty('studentNumber')
-    studentLoginId = atapi.ATFieldProperty('studentLoginId') 
-    courseCode = atapi.ATFieldProperty('courseCode')
-    courseYear = atapi.ATFieldProperty('courseYear')
-    courseStatus = atapi.ATFieldProperty('courseStatus')
-    courseFullName = atapi.ATFieldProperty('courseFullName')
-    abbrevCourseTitle = atapi.ATFieldProperty('abbrevCourseTitle')
-    defaultCampus = atapi.ATFieldProperty('defaultCampus')
-    studentSurname = atapi.ATFieldProperty('studentSurname')
-    studentGivenName = atapi.ATFieldProperty('studentGivenName')
-    daytimeContactNumber = atapi.ATFieldProperty('daytimeContactNumber')
-    mobilePhoneNumber = atapi.ATFieldProperty('mobilePhoneNumber')
-    email = atapi.ATFieldProperty('email')
-    personalEmail = atapi.ATFieldProperty('personalEmail')
+    stu_id = atapi.ATFieldProperty('stu_id')
+    login_id = atapi.ATFieldProperty('login_id') 
+    ssp_no = atapi.ATFieldProperty('ssp_no') 
+    ssp_att_no = atapi.ATFieldProperty('ssp_att_no') 
+    crs_cd = atapi.ATFieldProperty('crs_cd')
+    sprd_code = atapi.ATFieldProperty('sprd_code')
+    crs_year = atapi.ATFieldProperty('crs_year')
+    crs_status = atapi.ATFieldProperty('crs_status')
+    crs_full_nm = atapi.ATFieldProperty('crs_full_nm')
+    crs_nm = atapi.ATFieldProperty('crs_nm')
+    campus = atapi.ATFieldProperty('campus')
+    surname = atapi.ATFieldProperty('surname')
+    gvn_name = atapi.ATFieldProperty('gvn_name')
+    home_ph = atapi.ATFieldProperty('home_ph')
+    mob_ph = atapi.ATFieldProperty('mob_ph')
+    jcu_email = atapi.ATFieldProperty('jcu_email')
+    pers_email = atapi.ATFieldProperty('pers_email')
     confirmPersonalEmail = atapi.ATFieldProperty('confirmPersonalEmail')
     subjectInfo = atapi.ATFieldProperty('subjectInfo')
     difficultyWithEStudent = atapi.ATFieldProperty('difficultyWithEStudent')
     intendToApplyForAdvancedStanding = atapi.ATFieldProperty('intendToApplyForAdvancedStanding')
     submittedApplicationForAdvancedStanding = atapi.ATFieldProperty('submittedApplicationForAdvancedStanding')
-    isInternational = atapi.ATFieldProperty('isInternational')
+    intnl_stu = atapi.ATFieldProperty('intnl_stu')
     sanctions = atapi.ATFieldProperty('sanctions')
-    advancedStandingApproved = atapi.ATFieldProperty('advancedStandingApproved')
-    numberSubjectsEnrolled = atapi.ATFieldProperty('numberSubjectsEnrolled')
+    adv_std = atapi.ATFieldProperty('adv_std')
+    no_subjects_enr = atapi.ATFieldProperty('no_subjects_enr')
 
     def __init__(self, oid, **kwargs):
         for field in OurPersonSchema.keys():
@@ -219,10 +237,10 @@ class Person(base.ATCTContent):
         super(Person, self).__init__(oid, **kwargs)
 
     def Title(self):
-        if self.studentGivenName is None or self.studentSurname is None:
+        if self.gvn_name is None or self.surname is None:
             return self.id
         else:
-            return self.studentGivenName + ' ' + self.studentSurname
+            return self.gvn_name + ' ' + self.surname
     
     def getReviewState(self):
         portal_workflow = getToolByName(self, 'portal_workflow')

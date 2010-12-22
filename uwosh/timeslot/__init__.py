@@ -25,28 +25,7 @@ class EhsBookingMapper(MappedClassBase): pass
 #a primary key defined.  Go Oracle!
 wrapper = createSAWrapper(config.EHS_BOOKING_DB_CONNECTION_STRING, name=config.EHS_BOOKING_DB_CONNECTOR)
 table = Table(config.EHS_BOOKING_TABLE_NAME, wrapper.metadata, schema=config.EHS_BOOKING_DB_SCHEMA, autoload=True, )
-ehs_mapper = mapper(EhsBookingMapper, table, primary_key=table.c._data.values(), properties={
-    'stu_id':     synonym('studentNumber', map_column=True),
-    'login_id':	  synonym('studentLoginId', map_column=True),
-    'crs_cd':     synonym('courseCode', map_column=True),
-    'crs_year':   synonym('courseYear', map_column=True),
-    'crs_nm':     synonym('abbrevCourseTitle', map_column=True),
-    'crs_full_nm':     synonym('courseFullName', map_column=True),
-    'crs_status':     synonym('courseStatus', map_column=True),
-    'faculty_code':    synonym('facultyCode', map_column=True),
-    'faculty_name':    synonym('facultyName', map_column=True),
-    'campus':     synonym('defaultCampus', map_column=True),
-    'surname':    synonym('studentSurname', map_column=True),
-    'gvn_name':   synonym('studentGivenName', map_column=True),
-    'home_ph':    synonym('daytimeContactNumber', map_column=True),
-    'mob_ph':     synonym('mobilePhoneNumber', map_column=True),
-    "jcu_email":  synonym("email", map_column=True),
-    'pers_email': synonym('personalEmail', map_column=True),
-    'intnl_stu':  synonym('isInternational', map_column=True),
-    'sanctions':  synonym('sanction', map_column=True),
-    'adv_std':    synonym('advancedStandingApproved', map_column=True),
-    'no_subjects_enr':synonym('numberSubjectsEnrolled', map_column=True),
-})
+ehs_mapper = mapper(EhsBookingMapper, table, primary_key=table.c._data.values(), properties={})
 wrapper.registerMapper(ehs_mapper, name=config.EHS_BOOKING_ABSOLUTE_NAME)
 
 

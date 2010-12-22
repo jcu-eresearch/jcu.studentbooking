@@ -48,8 +48,8 @@ class BookUserForm(BaseBrowserView):
 
                 if student_records and len(student_records) == 1:
                     #Become that user
-                    studentLoginId = student_records[0].studentLoginId
-                    getToolByName(self.context, 'acl_users').session.setupSession(str(studentLoginId), self.context.REQUEST.RESPONSE)      
+                    login_id = student_records[0].login_id
+                    getToolByName(self.context, 'acl_users').session.setupSession(str(login_id), self.context.REQUEST.RESPONSE)      
 
                     #Redirect back to the booking page
                     self.request.response.redirect(self.context.absolute_url())
