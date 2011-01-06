@@ -4,7 +4,7 @@ jq(document).ready(function () {
         jq("input[name='slotSelection']:checked").parents('div.field tr').css('background-color', '#cef');
 
         jq("input[name='intendToApplyForAdvancedStanding']").click(function () { 
-            if (this.value === 1) { 
+            if (this.value === "1") { 
                 jq("input[name='submittedApplicationForAdvancedStanding']").enable();
                 jq('#archetypes-fieldname-submittedApplicationForAdvancedStanding').fadeIn();
             } else {
