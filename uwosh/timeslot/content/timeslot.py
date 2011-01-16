@@ -226,11 +226,9 @@ class TimeSlot(folder.ATFolder):
         return self.campus in ['TSV', 'CNS']
 
     def getRoomUrl(self):
-        url = None
-        if self.campus == 'TSV':
-            url = 'http://www.jcu.edu.au/maps/townsville/interactive/?location='+self.roomNumber
-        elif self.campus == 'CNS':
-            url = 'http://www.jcu.edu.au/maps/idc/groups/public/documents/maps/jcuprd_049685.pdf'
+        map = (self.campus == 'CNS') and 'cairns' or 'townsville'
+        url = 'http://www.jcu.edu.au/maps/%s/interactive/?location=%s' % \
+                                                  (map, self.roomNumber)
         return url
             
 
