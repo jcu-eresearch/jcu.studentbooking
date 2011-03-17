@@ -39,7 +39,7 @@
       attribute="exportToCSV"
       permission="uwosh.timeslot.ViewBookings"
       />
-    
+
      <browser:page
         for="..interfaces.ISignupSheet"
         name="remove-all-people"
@@ -55,22 +55,22 @@
         allowed_interface=".sendreminders.ISendRemindersView"
         permission="cmf.ManagePortal"
         />
-	
+
     <browser:pages
       for="..interfaces.ISignupSheet"
       class=".choosetimeslot.ChooseTimeSlot"
       allowed_interface=".choosetimeslot.IChooseTimeSlot"
       permission="zope2.View">
 
-      <browser:page 
-            name="select-course" 
+      <browser:page
+            name="select-course"
             attribute="selectCourse" />
 
-      <browser:page 
+      <browser:page
             name="choose-timeslot-view"
             template="choosetimeslot.pt" />
 
-      <browser:page 
+      <browser:page
             name="cancel-reservation"
             attribute="cancelBooking" />
 
@@ -101,15 +101,7 @@
         class=".debug.BookingDebugView"
         permission="cmf.ManagePortal"
         />
- 
-    <browser:page
-      for="..interfaces.ISignupSheet"
-      name="submit-user-selection"
-      class=".submitselection.SubmitSelection"
-      attribute="submitUserSelection"
-      permission="zope2.View"
-      />
-  
+
     <browser:page
         for="..interfaces.ICloneable"
         name="clone"
@@ -124,5 +116,5 @@
       action="choose-timeslot-view"
       description="The default user visible view of a Signup Sheet"
       />
-        
+
 </configure>

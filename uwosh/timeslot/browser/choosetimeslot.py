@@ -36,7 +36,7 @@ class ChooseTimeSlot(BaseBrowserView):
         #If a user hasn't selected a course yet, then get them to.
         #Administrators are special -- they don't get bumped.
         if self.student_details is None and not self.showEditLinks() and not self.isBookingStaff():
-            self.context.request.response.redirect(self.context.absolute_url()+'/@@select-course')
+            self.request.response.redirect(self.context.absolute_url()+'/@@select-course')
             return
 
         #When submitting our form, do the following for validation/processing
@@ -63,7 +63,7 @@ class ChooseTimeSlot(BaseBrowserView):
            timeSlot = None
            if not timeSlotUid or len(timeSlotUid) != 1:
                self.errors['slotSelection'] = "Please select one enrolment session to book into."
-           else:           
+           else:
                timeSlot = self.getBookingSessionByUid(timeSlotUid[0])
                existing = timeSlot.get(self.student_details['login_id'])
                #XXX Need more checks here to make sure the student
@@ -86,7 +86,7 @@ class ChooseTimeSlot(BaseBrowserView):
                    self.student_details.update(self.request.form)
                    person = timeSlot.invokeFactory('Person', self.student_details['login_id'], **self.student_details)
 
-                   try: 
+                   try:
                        #EMAIL: Send confirmation email to our user
                        mail.sendNotificationEmail(context=self.context,
                                       person=timeSlot[person],
@@ -95,12 +95,12 @@ class ChooseTimeSlot(BaseBrowserView):
                    except:
                        raise
                        plone_utils.addPortalMessage(_(u'Your booking was processed successfully but a confirmation email could not be sent.'), 'warning')
- 
+
                    self.booked_session_uid = timeSlot.UID()
                except:
                    raise
                    self.errors['slotSelection'] = "Your could not be signed up for your selected session.  The session may have been cancelled or become full.  Please select a different session."
-               
+
 
         #We're just loading the form, not submitting
         else:
@@ -109,10 +109,10 @@ class ChooseTimeSlot(BaseBrowserView):
             if self.student_details is not None:
                 for field_key in ExposedPersonSchema.keys():
                     self.request.form.setdefault(field_key, self.student_details.get(field_key))
-          
-        #Data reconfiguration before our page loads 
+
+        #Data reconfiguration before our page loads
         if self.student_details is not None:
-            self.faculty_code = self.student_details['faculty_code'] 
+            self.faculty_code = self.student_details['faculty_code']
             self.faculty_name = config.FACULTY_LIST.getValue(self.faculty_code)
         else:
             self.faculty_code = ''
@@ -150,18 +150,18 @@ class ChooseTimeSlot(BaseBrowserView):
            valid_courses = [util.all(result) for result in [ \
                               [str(course[key]) == course_identifier[key] \
                               for key in course_identifier] for course in self.courses] \
-                           ] 
+                           ]
 
            if marker_value in valid_courses:
                student_details = self.courses[valid_courses.index(marker_value)]
-              
-               #Convert keys to ascii since Plone needs this for the person creation 
+
+               #Convert keys to ascii since Plone needs this for the person creation
                student_details = dict((key.encode('ascii'),value) for (key,value) in student_details.items())
 
                #We're now sure the user is doing this course, then we can
                #save it now.  They might have been trying to haxx0r by
                #changing the input values.
-               session.set(config.EHS_BOOKING_COURSE_IDENTIFIER, 
+               session.set(config.EHS_BOOKING_COURSE_IDENTIFIER,
                            student_details)
 
                self.request.response.redirect(self.context.absolute_url())
@@ -178,10 +178,10 @@ class ChooseTimeSlot(BaseBrowserView):
             selection = session.has_key(config.EHS_BOOKING_COURSE_IDENTIFIER) and session.get(config.EHS_BOOKING_COURSE_IDENTIFIER)
             if selection:
                 self.request.form.setdefault('selectCourse', self.buildCourseIdentifier(selection) )
-                self.has_selection = True 
+                self.has_selection = True
 
         view = ViewPageTemplateFile("selectcourse.pt")
-        return view.__of__(self)()
+        return view(self)
 
     def cancelBooking(self):
         '''Processing that happens when a user is cancelling a given
@@ -205,7 +205,7 @@ class ChooseTimeSlot(BaseBrowserView):
                         login_id = student_details['login_id']
                         person = booking_session[login_id]
                         booking_session.manage_delObjects([login_id,])
-  
+
                         try:
                             #EMAIL: Send cancellation message to our user
                             mail.sendNotificationEmail(context=self.context,
@@ -215,7 +215,7 @@ class ChooseTimeSlot(BaseBrowserView):
                         except:
                             raise
                             plone_utils.addPortalMessage(_(u'Your selected booking was cancelled successfully but a confirmation email could not be sent.'), 'warning')
-                            
+
                         self.has_cancelled = True
                     except:
                         raise
@@ -223,7 +223,7 @@ class ChooseTimeSlot(BaseBrowserView):
 
 
         view = ViewPageTemplateFile("show-bookings.pt")
-        return view.__of__(self)()
+        return view(self)
 
 
     #Helper methods for our views
@@ -261,11 +261,11 @@ class ChooseTimeSlot(BaseBrowserView):
         object = self.getObjectByUid(uid)
         return (object is not None and \
                 object.getPortalTypeName() == 'Time Slot') and object or None
- 
+
     @instance.memoize
     def getObjectByUid(self, uid):
        return getToolByName(self.context, 'reference_catalog').lookupObject(uid)
- 
+
     @instance.memoize
     def getBookedSession(self):
        if hasattr(self, 'booked_session_uid') == False or self.booked_session_uid is None:
@@ -300,7 +300,7 @@ class ChooseTimeSlot(BaseBrowserView):
 
     @instance.memoize
     def showInputFields(self):
-        '''Check to see whether we should be showing the form's input 
+        '''Check to see whether we should be showing the form's input
            fields to the given user.  If the user is a normal student,
            and not a booking staff member (or signed up for any slot),
            then they should see the fields'''

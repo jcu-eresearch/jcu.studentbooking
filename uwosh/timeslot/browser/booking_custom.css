@@ -12,17 +12,18 @@ cursor: pointer;
 } 
 tr.timeslot.session-selected-True { 
 background-color:#CEF; 
-} 
-tr.timeslot.users-session-True, dl.portalMessage.success dd { 
-background-color:#D6F8D8; 
 }
-dl.portalMessage.success dt {
+
+.success {
+border-color: #55A843;
+}
+dl.success dt {
 background-color:#55A843; 
 }
-dl.portalMessage.success dd,
-dl.portalMessage.success dt { 
-border: 1px solid #55A843;
+tr.timeslot.users-session-True, dl.success dd { 
+background-color:#D6F8D8; 
 }
+
 h2.booking-page-title { 
 margin: 1em 0; 
 } 

@@ -9,12 +9,12 @@ from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import ITimeSlot, ICloneable
 from uwosh.timeslot import config
 from uwosh.timeslot.widget import TimeWidget
-from uwosh.timeslot import util 
+from uwosh.timeslot import util
 
 from DateTime import DateTime
 from Acquisition import aq_parent
 
-TimeSlotSpecialSchema = atapi.Schema((                    
+TimeSlotSpecialSchema = atapi.Schema((
 
     atapi.DateTimeField('startTime',
         storage=atapi.AnnotationStorage(),
@@ -22,7 +22,7 @@ TimeSlotSpecialSchema = atapi.Schema((
         widget=TimeWidget(label=_('Start Time'),
                           format='%I:%M %P')
     ),
-    
+
     atapi.DateTimeField('endTime',
         storage=atapi.AnnotationStorage(),
         required=True,
@@ -99,7 +99,7 @@ TimeSlotSpecialSchema = atapi.Schema((
         widget=atapi.BooleanWidget(label=_(u'Allow Waiting List'),
                                    description=_(u'Check if you want to allow signups to waiting list once \
                                                    max capacity is reached'))
-    ),     
+    ),
 
 ))
 
@@ -121,7 +121,7 @@ schemata.finalizeATCTSchema(TimeSlotSchema, folderish=True, moveDiscussion=False
 
 class TimeSlot(folder.ATFolder):
     implements(ITimeSlot, ICloneable)
-	
+
     portal_type = 'Time Slot'
     schema = TimeSlotSchema
 
@@ -171,7 +171,7 @@ class TimeSlot(folder.ATFolder):
         return '%s (%s)' % (self.getTimeAndDate(), self.name)
 
     def getNumberOfAvailableSpots(self):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', review_state='signedup', 
+        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', review_state='signedup',
                                                                path=self.getPath())
         numberOfPeopleSignedUp = len(brains)
         return max(0, self.maxCapacity - numberOfPeopleSignedUp)
@@ -182,7 +182,7 @@ class TimeSlot(folder.ATFolder):
         return self.isUserSignedUpForThisSlot(username)
 
     def isUserSignedUpForThisSlot(self, username):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', id=username, 
+        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', id=username,
                                                                path=self.getPath())
         return len(brains) != 0
 
@@ -193,11 +193,11 @@ class TimeSlot(folder.ATFolder):
         return DateTime(aq_parent(self).getDate().Date()+' '+self.getStartTime().Time()).isPast()
 
     def getPeople(self):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', path=self.getPath(), 
+        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', path=self.getPath(),
                                                                depth=1)
         people = [brain.getObject() for brain in brains]
         return people
-        
+
     def removeAllPeople(self):
         idsToRemove = [person.id for person in self.getPeople()]
         self.manage_delObjects(idsToRemove)
@@ -217,7 +217,7 @@ class TimeSlot(folder.ATFolder):
         return util.getFacultyName(self.faculty)
 
     def getFacultyAbbreviation(self):
-        return util.getFacultyAbbreviation(self.faculty) 
+        return util.getFacultyAbbreviation(self.faculty)
 
     def getCampusName(self):
         return util.getCampusName(self.campus)
@@ -227,10 +227,10 @@ class TimeSlot(folder.ATFolder):
 
     def getRoomUrl(self):
         map = (self.campus == 'CNS') and 'cairns' or 'townsville'
-        url = 'http://www.jcu.edu.au/maps/%s/interactive/?location=%s' % \
+        url = 'http://www.jcu.edu.au/maps/%s/interactive/?hidelegend=yes&location=%s' % \
                                                   (map, self.roomNumber)
         return url
-            
+
 
     def getStyleClass(self):
         #We need relevant classes to help our drop-downs distinguish faculty etc
@@ -239,7 +239,7 @@ class TimeSlot(folder.ATFolder):
                +' faculty-'+self.faculty \
                +' room-'+self.roomNumber \
                +' isfull-'+str(self.isFull())
-        
+
 
 atapi.registerType(TimeSlot, config.PROJECTNAME)
 

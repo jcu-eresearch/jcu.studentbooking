@@ -136,7 +136,7 @@
 		  <span tal:content="timeSlot/getTimeRange" />
 		</td>
                 <td>
-		  <a href="#" class="link-plain" target="_blank" 
+		  <a href="#" class="link-plain link-session-map" 
                  tal:omit-tag="not:timeSlot/showRoomUrl"
                  tal:attributes="href timeSlot/getRoomUrl">
                      <span class="room-number"
@@ -194,7 +194,6 @@
 	  <input type="submit" name="form.button.Submit" value="Submit Form"
                  id="submitButton" />
 	  <input type="hidden" name="form.submitted" value="1" />
-	  <input tal:attributes="value member" type="hidden" name="memberToAssign" />
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 	</div>
 

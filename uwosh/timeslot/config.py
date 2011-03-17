@@ -47,13 +47,13 @@ CAMPUS_VOCABULARY = SimpleVocabulary(CAMPUS_TERMS)
 EHS_CONFIRMATION_EMAIL = 'CONFIRMATION_EMAIL'
 EHS_REMINDER_EMAIL = 'REMINDER_EMAIL'
 EHS_CANCELLATION_EMAIL = 'CANCELLATION_EMAIL'
-EHS_EMAIL_TYPES = { EHS_CONFIRMATION_EMAIL: 
+EHS_EMAIL_TYPES = { EHS_CONFIRMATION_EMAIL:
                               { 'subject': 'Booking Confirmation',
                                 'bodyField': 'confirmationEmailBody'},
-                    EHS_REMINDER_EMAIL:     
+                    EHS_REMINDER_EMAIL:
                               { 'subject': 'Enrolment Help Session Reminder',
                                 'bodyField': 'reminderEmailBody'},
-                    EHS_CANCELLATION_EMAIL: 
+                    EHS_CANCELLATION_EMAIL:
                               { 'subject': 'Cancellation Confirmation',
                                 'bodyField': 'cancellationEmailBody'},
                   }

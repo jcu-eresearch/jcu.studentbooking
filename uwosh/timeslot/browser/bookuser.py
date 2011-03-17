@@ -18,7 +18,7 @@ class BookUserForm(BaseBrowserView):
         self.context = context
         self.request = request
         self.errors = {}
-    
+
     def __call__(self, *args, **kwargs):
         self.student_id = None
         self.student_records = None
@@ -27,7 +27,7 @@ class BookUserForm(BaseBrowserView):
         if self.request.form.get('form.submitted') == '1':
 
             self.authenticateForm()
-            
+
             self.student_id = self.request.form.get('studentIdSearch')
 
             if self.request.form.get('form.button.Submit') == 'Search':
@@ -36,7 +36,7 @@ class BookUserForm(BaseBrowserView):
                     self.student_records = self.queryStudentDetails(self.student_id, first=False, as_dict=True, search_student_id=True, search_login_id=True)
                     if self.student_records:
                         self.first_student_record = self.student_records[0]
-                
+
                 if not self.student_records:
                     self.errors['studentIdSearch'] = "A student with this identifier could not be found.  Please search for another."
 
@@ -49,12 +49,12 @@ class BookUserForm(BaseBrowserView):
                 if student_records and len(student_records) == 1:
                     #Become that user
                     login_id = student_records[0].login_id
-                    getToolByName(self.context, 'acl_users').session.setupSession(str(login_id), self.context.REQUEST.RESPONSE)      
+                    getToolByName(self.context, 'acl_users').session._setupSession(str(login_id), self.context.REQUEST.RESPONSE)
 
                     #Redirect back to the booking page
                     self.request.response.redirect(self.context.absolute_url())
                     return
 
-        #Otherwise, we fall through to the default page rendering 
+        #Otherwise, we fall through to the default page rendering
         return super(BookUserForm,self).__call__(args, kwargs)
 

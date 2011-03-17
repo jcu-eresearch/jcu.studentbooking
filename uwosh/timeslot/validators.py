@@ -1,14 +1,15 @@
-from Products.validation.interfaces.IValidator import IValidator
-from Products.validation.i18n import PloneMessageFactory as _
-from Products.validation.i18n import recursiveTranslate
-from Products.validation.i18n import safe_unicode
 import re
 from types import StringType
 
+from DateTime import DateTime
+from Products.validation.i18n import PloneMessageFactory as _
+from Products.validation.i18n import recursiveTranslate
+from Products.validation.i18n import safe_unicode
+from Products.validation.interfaces.IValidator import IValidator
 from Products.validation.validators.BaseValidators import EMAIL_RE
 from Products.validation.validators.RegexValidator import ignoreRE, RegexValidator
 
-from DateTime import DateTime
+from zope.interface import implements
 
 def patched_validate_required(self, instance, value, errors):
     if not value:
@@ -45,10 +46,10 @@ class SanerValidator(RegexValidator):
                             })
 
                 return recursiveTranslate(msg, **kwargs)
-        return 1 
+        return 1
 
 class EndTimeAfterStartTimeValidator:
-    __implements__ = IValidator
+    implements(IValidator)
 
     def __init__(self, name):
         self.name = name
@@ -60,7 +61,7 @@ class EndTimeAfterStartTimeValidator:
         return 1
 
 class SessionSizeIsOkayValidator:
-    __implements__ = IValidator
+    implements(IValidator)
 
     def __init__(self, name):
         self.name = name
