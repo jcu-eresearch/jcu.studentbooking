@@ -169,7 +169,8 @@
 	     <tal:rows repeat="timeSlot timeSlots">
 	      <tr tal:define="isUserSignedUp python:view.isCurrentUserSignedUpForSlot(timeSlot);
                               isChecked python:view.checkTimeSlot(timeSlot);
-                              isFull timeSlot/isFull;"
+                              isFull timeSlot/isFull;
+                              isClosed timeSlot/isClosed;"
                   tal:attributes="class string:${timeSlot/getStyleClass} users-session-${isUserSignedUp} session-selected-${isChecked};">
 		<td tal:condition="showSlotNames">
 		  <strong tal:content="timeSlot/name">Session Name</strong>
@@ -191,14 +192,19 @@
                   (<span tal:replace="timeSlot/getCampusName">Campus</span>) 
                 </td>
 		<td class="ehs-centre-cell">
-		  <span tal:content="timeSlot/getNumberOfAvailableSpots" />
+		  <span tal:replace="timeSlot/getNumberOfAvailableSpots" />
+		    <tal:booking-staff condition="isBookingStaff"> of
+		    <span tal:replace="timeSlot/maxCapacity" />
+		      <tal:isclosed condition="isClosed">(Closed)</tal:isclosed>
+		    </tal:booking-staff> 
 		</td>
 		<td class="ehs-centre-cell" tal:condition="showInputFields">
 		  <input type="radio" name="slotSelection"
-                         tal:condition="not:isFull" 
+                         tal:condition="python: not isFull and not isClosed" 
 		         tal:attributes="value timeSlot/UID;
                                        checked isChecked;" />
                   <tal:isfull condition="isFull">Full</tal:isfull>
+                  <tal:isclosed condition="isClosed">Closed</tal:isclosed>
 	        </td>
                 <td tal:condition="showEditLinks">
                   <a tal:attributes="href timeSlot/absolute_url;">View</a>

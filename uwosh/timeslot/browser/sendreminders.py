@@ -1,13 +1,8 @@
-from AccessControl import Unauthorized
-from Acquisition import aq_inner
 from DateTime import DateTime
 
-from zope.component import getMultiAdapter
 from zope.interface import implements, Interface
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
 
-from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot import config, mail
 from uwosh.timeslot.browser.base import BaseBrowserView
 
@@ -23,7 +18,7 @@ class SendRemindersView(BaseBrowserView):
            email to each and every student with a booking on the next day.
            So, if we run Monday, we should be sending for Wednesday's sessions.'''
         catalog = getToolByName(self.context, 'portal_catalog')
- 
+
         #We want the date two days from now.
         target_date = DateTime().earliestTime()+2
 

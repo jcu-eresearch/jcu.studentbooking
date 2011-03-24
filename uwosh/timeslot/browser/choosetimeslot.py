@@ -69,11 +69,12 @@ class ChooseTimeSlot(BaseBrowserView):
                #XXX Need more checks here to make sure the student
                #can sign up for the given slot...
                if not timeSlot \
+                  or timeSlot.isClosed() \
                   or timeSlot.isFull() \
                   or timeSlot.isInThePast() \
                   or timeSlot.getFaculty() != self.student_details['faculty_code'] \
                   or self.context.isUserSignedUpForAnySlot(self.student_details):
-                   self.errors['slotSelection'] = "Your could not be signed up for your selected session.  It may have been cancelled or become full.  Please select a different session."
+                   self.errors['slotSelection'] = "Your could not be signed up for your selected session.  It may have been cancelled, closed or become full.  Please select a different session."
                elif existing:
                    self.errors['slotSelection'] = "You are already attending this enrolment session for %s.  Please choose another session." % existing.crs_full_nm
 

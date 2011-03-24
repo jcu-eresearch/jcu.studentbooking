@@ -1,5 +1,6 @@
 from zope.interface import implements
 
+from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.configuration import zconf
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import folder
@@ -80,6 +81,15 @@ TimeSlotSpecialSchema = atapi.Schema((
                                    description=_(u'The maximum number of people who can booking into this session.'))
     ),
 
+    atapi.IntegerField('autoCloseTime',
+        storage=atapi.AnnotationStorage(),
+        default=2,
+        required=True,
+        validators = ('isInt',),
+        widget=atapi.IntegerWidget(label=_(u'Auto-Close Time'),
+                                   description=_(u'The number of hours before the session that this session will automatically close.  Set to zero (0) to disable auto-closure of this session.'))
+    ),
+
     atapi.TextField('emailBodyText',
         required=False,
         searchable=False,
@@ -136,6 +146,7 @@ class TimeSlot(folder.ATFolder):
     roomNumber = atapi.ATFieldProperty('roomNumber')
     slotLocation = atapi.ATFieldProperty('slotLocation')
     maxCapacity = atapi.ATFieldProperty('maxCapacity')
+    autoCloseTime = atapi.ATFieldProperty('autoCloseTime')
     emailBodyText = atapi.ATFieldProperty('emailBodyText')
 
     #Maintained from the original product
@@ -167,34 +178,62 @@ class TimeSlot(folder.ATFolder):
     def getTimeAndDate(self):
         return '%s: %s' % (self.getTimeRange(), self.getDate())
 
+    def getZopeDateTime(self):
+        return DateTime(aq_parent(self).getDate().Date() \
+                        + ' ' + self.getStartTime().Time()
+                       )
+
     def getLabel(self):
         return '%s (%s)' % (self.getTimeAndDate(), self.name)
 
     def getNumberOfAvailableSpots(self):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', review_state='signedup',
-                                                               path=self.getPath())
+        catalog = getToolByName(self, 'portal_catalog')
+        brains = catalog.unrestrictedSearchResults(portal_type='Person',
+                                                   review_state='signedup',
+                                                   path=self.getPath()
+                                                  )
         numberOfPeopleSignedUp = len(brains)
         return max(0, self.maxCapacity - numberOfPeopleSignedUp)
 
     def isCurrentUserSignedUpForThisSlot(self):
-        member = self.portal_membership.getAuthenticatedMember()
+        mtool = getToolByName(self, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
         username = member.getUserName()
         return self.isUserSignedUpForThisSlot(username)
 
     def isUserSignedUpForThisSlot(self, username):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', id=username,
-                                                               path=self.getPath())
+        catalog = getToolByName(self, 'portal_catalog')
+        brains = catalog.unrestrictedSearchResults(portal_type='Person',
+                                                   id=username,
+                                                   path=self.getPath()
+                                                  )
         return len(brains) != 0
 
     def isFull(self):
         return (self.getNumberOfAvailableSpots() == 0) # and not self.allowWaitingList)
 
+    def isClosed(self):
+        workflow_tool = getToolByName(self, 'portal_workflow')
+        return workflow_tool.getInfoFor(self, 'review_state') == \
+                config.SESSION_CLOSED_STATE
+
+    def isPastAutoClosureTime(self):
+        session_time = self.getZopeDateTime()
+        time_has_passed = False
+        if self.autoCloseTime > 0:
+            auto_closure_time = session_time - (self.autoCloseTime / 24.0)
+            time_has_passed = auto_closure_time.isPast()
+        return time_has_passed
+
     def isInThePast(self):
-        return DateTime(aq_parent(self).getDate().Date()+' '+self.getStartTime().Time()).isPast()
+        return self.getZopeDateTime().isPast()
 
     def getPeople(self):
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Person', path=self.getPath(),
-                                                               depth=1)
+        catalog = getToolByName(self, 'portal_catalog')
+        brains = catalog.unrestrictedSearchResults(portal_type='Person',
+                                                   path=self.getPath(),
+                                                   depth=1
+                                                  )
         people = [brain.getObject() for brain in brains]
         return people
 

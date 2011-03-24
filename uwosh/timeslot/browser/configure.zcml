@@ -34,6 +34,14 @@
         permission="cmf.ManagePortal"
         />
 
+    <browser:page
+        for="..interfaces.ISignupSheet"
+        name="auto-close-sessions"
+        class=".autoclosesessions.AutoCloseSessionsView"
+        allowed_interface=".autoclosesessions.IAutoCloseSessionsView"
+        permission="cmf.ManagePortal"
+        />
+
     <browser:pages
       for="..interfaces.ISignupSheet"
       class=".choosetimeslot.ChooseTimeSlot"
