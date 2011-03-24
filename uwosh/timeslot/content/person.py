@@ -17,7 +17,7 @@ ExposedPersonSchema = atapi.Schema((
         storage=atapi.AnnotationStorage(),
         required=True,
         widget=atapi.StringWidget(label=_(u'Daytime Contact Number'),
-                                  description=_(u'Enter your daytime phone number.')), 
+                                  description=_(u'Enter your daytime phone number.')),
         validators = ('saneIsPhoneNumber')
     ),
 
@@ -25,7 +25,7 @@ ExposedPersonSchema = atapi.Schema((
         storage=atapi.AnnotationStorage(),
         required=False,
         widget=atapi.StringWidget(label=_(u'Mobile Phone Number'),
-                                  description=_(u'Enter your mobile phone number.')), 
+                                  description=_(u'Enter your mobile phone number.')),
         validators = ('saneIsPhoneNumber')
     ),
 
@@ -204,9 +204,9 @@ class Person(base.ATCTContent):
     title = atapi.ATFieldProperty('title')
 
     stu_id = atapi.ATFieldProperty('stu_id')
-    login_id = atapi.ATFieldProperty('login_id') 
-    ssp_no = atapi.ATFieldProperty('ssp_no') 
-    ssp_att_no = atapi.ATFieldProperty('ssp_att_no') 
+    login_id = atapi.ATFieldProperty('login_id')
+    ssp_no = atapi.ATFieldProperty('ssp_no')
+    ssp_att_no = atapi.ATFieldProperty('ssp_att_no')
     crs_cd = atapi.ATFieldProperty('crs_cd')
     sprd_code = atapi.ATFieldProperty('sprd_code')
     crs_year = atapi.ATFieldProperty('crs_year')
@@ -241,13 +241,13 @@ class Person(base.ATCTContent):
             return self.id
         else:
             return self.gvn_name + ' ' + self.surname
-    
+
     def getReviewState(self):
         portal_workflow = getToolByName(self, 'portal_workflow')
         return portal_workflow.getInfoFor(self, 'review_state')
-    
+
     def getReviewStateTitle(self):
-    	reviewState = self.getReviewState()
-    	return self.portal_workflow.getTitleForStateOnType(reviewState, 'Person')
-    
+        reviewState = self.getReviewState()
+        return self.portal_workflow.getTitleForStateOnType(reviewState, 'Person')
+
 atapi.registerType(Person, PROJECTNAME)

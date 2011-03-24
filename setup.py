@@ -43,18 +43,17 @@ setup(name='uwosh.timeslot',
                         'collective.monkeypatcher>=1.0',
                         'collective.easytemplate',
                         'plone.directives.form',
-                        'collective.z3cform.datepicker',
                         # -*- Extra requirements: -*-
                         ],
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
       test_suite = 'uwosh.timeslot.tests.test_docs.test_suite',
       entry_points="""
-      # -*- entry_points -*- 
-      
+      # -*- entry_points -*-
+
       [z3c.autoinclude.plugin]
       target = plone
- 
+
       [distutils.setup_keywords]
       paster_plugins = setuptools.dist:assert_string_list
       """,

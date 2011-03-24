@@ -1,9 +1,11 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:cache="http://namespaces.zope.org/cache"
     i18n_domain="uwosh.timeslot">
 
     <include package="plone.app.contentmenu" />
+    <include package="plone.app.caching" />
 
     <browser:resource
       name="booking_custom.css"
@@ -23,30 +25,6 @@
         permission="zope2.View"
         layer="jcu.theme.browser.interfaces.IThemeSpecific"
         />
-
-    <!-- <browser:page
-      for="..interfaces.ISignupSheet"
-      name="manager-summary"
-      template="managersummary.pt"
-      allowed_interface=".choosetimeslot.IChooseTimeSlot"
-      permission="uwosh.timeslot.ViewBookings"
-      />
-
-    <browser:page
-      for="..interfaces.ISignupSheet"
-      name="export-to-csv"
-      class=".exporttocsv.ExportToCSV"
-      attribute="exportToCSV"
-      permission="uwosh.timeslot.ViewBookings"
-      />
-
-     <browser:page
-        for="..interfaces.ISignupSheet"
-        name="remove-all-people"
-        class=".removeallpeople.RemoveAllPeopleForm"
-        permission="uwosh.timeslot.ManageBookings"
-        /> -->
-
 
     <browser:page
         for="..interfaces.ISignupSheet"
@@ -85,6 +63,11 @@
       />
 
      </browser:pages>
+
+    <cache:ruleset
+        ruleset="plone.content.itemView"
+        for=".choosetimeslot.ChooseTimeSlot"
+        />
 
     <browser:page
         for="..interfaces.ISignupSheet"

@@ -26,7 +26,7 @@
 	      Debug 
 	    </dt>
 	    <dd class="collapsibleContent">
-              <div tal:content="view/student_details">asfd</div>
+              <div tal:content="view/student_details">Student details</div>
 	    </dd>
 	 </dl>
      </tal:comment>
@@ -37,9 +37,18 @@
                   condition="python: view.faculty_name != 'Non-faculty'">- <span tal:replace="view/faculty_name">Faculty of Law, Business and the Creative Arts</span>
              </tal:no-nonfaculty>
      </h2>
-      <div tal:condition="context/contactInfo" id="contactInfo"
-           tal:content="structure context/contactInfo">Contact info as HTML
-      </div>
+
+       <dl class="collapsible collapsedOnLoad" 
+           tal:omit-tag="not:isBookingStaff">
+	 <dt class="collapsibleHeader" tal:condition="isBookingStaff">
+	     Contact information
+         </dt>
+	 <dd class="collapsibleContent" tal:omit-tag="not:isBookingStaff">
+	    <div tal:condition="context/contactInfo" id="contactInfo"
+		 tal:content="structure context/contactInfo">Contact info as HTML
+	    </div>
+	 </dd>
+       </dl>
 
       <ul>
 	<li tal:condition="python:booked_session">
@@ -68,10 +77,6 @@
        <div id="archetypes-fieldname-slotSelection" class="field"
             tal:attributes="class python:'field'+(selectionField in errors and ' error' or '');">
           
-          <label for="slotSelection" class="formQuestion">Enrolment sessions</label>
-          <span title="Required" class="fieldRequired" tal:condition="showInputFields">
-            (Required)
-          </span>
           <div id="slotSelection_help" class="formHelp" tal:condition="not:isBookingStaff"><span tal:condition="showInputFields">Select the session that you would like to book into. </span><strong>Selected course:</strong>
                    <span tal:replace="student_details/crs_cd" /> - 
                    <span tal:replace="student_details/crs_full_nm" /> 
@@ -81,7 +86,48 @@
                    <span tal:replace="student_details/crs_status" />)
           </div>
           
-        <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>
+	  <div class="fieldErrorBox" tal:content="python: selectionField in errors and errors[selectionField] or ''"> </div>
+
+       <div id="slotSelection-drilldown">
+          <div id="drilldown-fieldname-campus" class="field"
+               style="display:inline-block;">
+            <label for="campus" class="formQuestion">Show only:</label>
+	    <input class="drilldown"
+	           type="checkbox" id="campus_1" value="campus-TSV" name="campus:list" checked="checked" />
+            <label for="campus_1">Townsville</label>
+	    <input class="drilldown"
+	           type="checkbox" id="campus_2" value="campus-CNS" name="campus:list" checked="checked" />
+            <label for="campus_2">Cairns</label>
+	  </div>
+	   <input class="drilldown" type="hidden" id="faculty_" 
+	   value="faculty-XXXX" name="faculty:list" checked="checked" 
+	   tal:condition="not:isBookingStaff"
+	   tal:attributes="value python:'faculty-'+view.faculty_code;"
+		 />
+          <div id="drilldown-fieldname-campus" class="field"
+               style="display:inline-block; margin-left: 2em;"
+               tal:condition="isBookingStaff">
+            <label for="faculty" class="formQuestion">Show sessions from:</label>
+	    <input class="drilldown"
+	           type="checkbox" id="faculty_1" value="faculty-6100" name="faculty:list" checked="checked" />
+            <label for="faculty_1">FLBCA</label>
+	    <input class="drilldown"
+	           type="checkbox" id="faculty_2" value="faculty-6200" name="faculty:list" checked="checked" />
+            <label for="faculty_2">FMHMS</label>
+	    <input class="drilldown"
+	           type="checkbox" id="faculty_3" value="faculty-6600" name="faculty:list" checked="checked" />
+            <label for="faculty_3">FSE</label>
+	    <input class="drilldown"
+  	           type="checkbox" id="faculty_4" value="faculty-6700" name="faculty:list" checked="checked" />
+            <label for="faculty_4">FAESS</label>
+	    <input class="drilldown"
+	           type="checkbox" id="faculty_5" value="faculty-6000" name="faculty:list" checked="checked" />
+            <label for="faculty_5">NF</label>
+            <input type="button" id="faculty_all" value="All" name="faculty-all:button" />
+            <input type="button" id="faculty_none" value="None" name="faculty-none:button" />
+          </div>
+	</div>
+
         <table class="plain" tal:define="days context/getDays"
                style="width: 100%; background-color: white;">
 	  
