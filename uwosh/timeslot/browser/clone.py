@@ -10,7 +10,7 @@ from uwosh.timeslot.interfaces import *
 from zope.component import queryUtility
 from plone.i18n.normalizer.interfaces import IURLNormalizer
 
-from uwosh.timeslot.content.timeslot import OurTimeSlotSchema
+from uwosh.timeslot.content.timeslot import TimeSlotSchema
 from uwosh.timeslot.util import getFacultyAbbreviation
 
 # Begin ugly hack. It works around a ContentProviderLookupError: plone.htmlhead error caused by Zope 2 permissions.
@@ -112,7 +112,7 @@ class CloneForm(formbase.PageForm):
 
     def cloneTimeSlot(self):
         properties = {}
-        for key in OurTimeSlotSchema._fields.keys():
+        for key in TimeSlotSchema._fields.keys():
             properties[key] = self.context[key]
 
         origStartTime = properties['startTime']
