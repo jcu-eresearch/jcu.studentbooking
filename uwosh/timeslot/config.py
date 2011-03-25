@@ -69,6 +69,7 @@ EHS_CSV_EXPORT_FORMAT = \
      'Day',
      'Session Name',
      'Time',
+     'Session Campus',
      'Status',
      'Student Number',
      'Course Code',

@@ -39,13 +39,13 @@ class Day(folder.ATFolder):
     title = atapi.ATFieldProperty('title')
     date = atapi.ATFieldProperty('date')
     description = atapi.ATFieldProperty('description')
-    
+
     def Title(self):
     	if self.date is None:
             return self.id
     	else:
     	    return self.date.strftime('%A, %d %B %Y')
-    
+
     def getTimeSlots(self, faculty_code=''):
         brains = self.portal_catalog.unrestrictedSearchResults(
                              portal_type='Time Slot',
@@ -58,16 +58,19 @@ class Day(folder.ATFolder):
         now = DateTime()
         currentTime = DateTime(2000, 01, 01, now.hour(), now.minute())
 
-        #Short circuit is this Day isn't today or if we're showing all faculties
+        #Short circuit is this Day isn't today or if we're showing all
+        #faculties.  This implicitly means that admins will see all sessions
+        #happening on a given day (eg today), even if that session has
+        #already happened.
         showSlot = not self.getDate().isCurrentDay() or faculty_code == ''
 
         #Give us back all timeslots where we short circuit or else the start after right now.
         timeSlots = [brain.getObject() for brain in brains if showSlot or brain['getStartTime'] > currentTime]
         return timeSlots
-        
+
     def getTimeSlot(self, title):
         clean_title = '"' + title + '"'
-        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Time Slot', Title=clean_title, 
+        brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Time Slot', Title=clean_title,
                                                                path=self.getPath(), depth=1)
         if len(brains) == 0:
             raise ValueError('The TimeSlot %s was not found.' % title)
@@ -84,6 +87,6 @@ class Day(folder.ATFolder):
     def getPath(self):
         path = self.getPhysicalPath()
         return '/'.join(path)
-        
+
 
 atapi.registerType(Day, PROJECTNAME)

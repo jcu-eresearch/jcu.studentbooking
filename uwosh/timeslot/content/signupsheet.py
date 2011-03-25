@@ -12,8 +12,8 @@ from collective.easytemplate.fields import TemplatedTextField
 
 from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import ISignupSheet
-from uwosh.timeslot import config 
-from uwosh.timeslot.content.person import DummyExposedPersonSchema 
+from uwosh.timeslot import config
+from uwosh.timeslot.content.person import DummyExposedPersonSchema
 
 
 SignupSheetSchema = folder.ATFolderSchema.copy() + atapi.Schema((
@@ -147,7 +147,7 @@ class SignupSheet(folder.ATFolder):
         if len(brains) == 0:
             raise ValueError('The date %s was not found.' % date)
         return brains[0].getObject()
-        
+
     def getDays(self, all=False):
         brains = self.portal_catalog.unrestrictedSearchResults(portal_type='Day', path=self.getPath(),
                                                                depth=1, sort_on='getDate', sort_order='ascending')
@@ -159,7 +159,7 @@ class SignupSheet(folder.ATFolder):
 
             while (indexOfFirstUsefulObject < len(brains)) and (brains[indexOfFirstUsefulObject]['getDate'] < today):
                 indexOfFirstUsefulObject += 1
-            
+
             if all:
                 return [i.getObject() for i in brains]
             else:
@@ -169,8 +169,8 @@ class SignupSheet(folder.ATFolder):
     def removeAllPeople(self):
         for (id, obj) in self.contentItems():
             obj.removeAllPeople()
-        
-    def exportToCSV(self, faculty=[], campus=[], startDate=None, endDate=None,
+
+    def exportToCSV(self, faculty=[], session_campus=[], student_default_campus=[], startDate=None, endDate=None,
                     sortOrder=[]):
         buffer = StringIO()
         writer = csv.writer(buffer, quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -184,9 +184,15 @@ class SignupSheet(folder.ATFolder):
             if (startDate is None or thisDay >= startDate) and \
                (endDate is None or thisDay <= endDate):
                 for session in day.getTimeSlots(faculty or ''):
-                    if campus == [] or session.campus in campus:
+                    if session_campus == [] or \
+                       session.campus in session_campus:
                         for person in session.getPeople():
-                            writer.writerow(self.buildCSVRow(day, session, person))
+                            if student_default_campus == [] or \
+                               person.campus in student_default_campus:
+                                writer.writerow(self.buildCSVRow(day,
+                                                                 session,
+                                                                 person)
+                                               )
 
         result = buffer.getvalue()
         buffer.close()
@@ -198,6 +204,7 @@ class SignupSheet(folder.ATFolder):
                 day.getDate(),
                 session.getName(),
                 session.getTimeRange(),
+                session.campus,
                 person.crs_status,
                 person.stu_id,
                 person.crs_cd,
@@ -222,7 +229,7 @@ class SignupSheet(folder.ATFolder):
                 person.no_subjects_enr,
                ]
         return row
-    
+
     def isCurrentUserSignedUpOrWaitingForAnySlot(self):
         username = self.getCurrentUsername()
         return self.isUserSignedUpOrWaitingForAnySlot(username)
@@ -233,14 +240,14 @@ class SignupSheet(folder.ATFolder):
     def isCurrentUserSignedUpForAnySlot(self):
         username = self.getCurrentUsername()
         return self.isUserSignedUpForAnySlot(username)
-    
+
     def isUserSignedUpForAnySlot(self, student_details):
         return (len(self.getSlotsUserIsSignedUpFor(student_details)) > 0)
 
     def isCurrentUserWaitingForAnySlot(self):
         username = self.getCurrentUsername()
         return self.isUserWaitingForAnySlot(username)
-    
+
     def isUserWaitingForAnySlot(self, username):
         return (len(self.getSlotsUserIsWaitingFor(username)) > 0)
 
@@ -250,9 +257,9 @@ class SignupSheet(folder.ATFolder):
 
     def getSlotsUserIsSignedUpFor(self, student_details):
         brains = self.portal_catalog.unrestrictedSearchResults(
-                                portal_type='Person', 
+                                portal_type='Person',
                                 id=student_details['login_id'],
-                                review_state='signedup', 
+                                review_state='signedup',
                                 path=self.getPath())
 
         slots = []
@@ -263,7 +270,7 @@ class SignupSheet(folder.ATFolder):
                 timeSlot = person.aq_parent
                 if not timeSlot.isInThePast():
                     slots.append(timeSlot)
-                
+
         return slots
 
     def getSlotsCurrentUserIsWaitingFor(self):
@@ -282,7 +289,7 @@ class SignupSheet(folder.ATFolder):
             day = timeSlot.aq_parent
             if day.getDate() >= today:
                 slots.append(timeSlot)
-                
+
         return slots
 
     def getCurrentUsername(self):

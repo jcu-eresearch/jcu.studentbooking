@@ -22,9 +22,17 @@ class IManagerReportExportFormSchema(form.Schema):
                                          source=config.FACULTY_VOCABULARY),
                 )
 
-    form.widget(campus=CheckBoxFieldWidget)
-    campus = schema.List(title=_(u"Campus"),
-                    description=_(u"Select campuses you would like records for. Selecting nothing implies all campuses."),
+    form.widget(session_campus=CheckBoxFieldWidget)
+    session_campus = schema.List(title=_(u"Session Campus"),
+                    description=_(u"Show bookings for sessions occurring at these selected campuses. Selecting nothing implies all campuses."),
+                    required=False, default=[],
+                    value_type=schema.Choice( \
+                                         source=config.CAMPUS_VOCABULARY),
+                )
+
+    form.widget(student_default_campus=CheckBoxFieldWidget)
+    student_default_campus = schema.List(title=_(u"Student Default Campus"),
+                    description=_(u"Show bookings for students associated with these default campuses. Selecting nothing implies all campuses."),
                     required=False, default=[],
                     value_type=schema.Choice( \
                                          source=config.CAMPUS_VOCABULARY),
@@ -75,7 +83,8 @@ class ManagerReportExportForm(form.SchemaForm):
                                    currentDateTime)
 
         self.request.response.setHeader('Content-Type', 'text/csv')
-	self.request.response.setHeader('Content-Disposition', 'attachment; filename="%s"' % filename)
+        self.request.response.setHeader('Content-Disposition', \
+                                        'attachment; filename="%s"' % filename)
 
         self.output = self.context.exportToCSV(**data)
 
