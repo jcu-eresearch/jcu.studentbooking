@@ -72,6 +72,18 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+   <genericsetup:upgradeStep
+       title="Change workflow for days/timeslots"
+       description="Workflow was previously limited, expanding to allow open and closed sessions."
+       source="1.4.7"
+       destination="2"
+       handler="uwosh.timeslot.setuphandlers.upgrade_timeslot_workflow"
+       sortkey="1"
+       profile="uwosh.timeslot:default"
+       />
+
+
+
     <!-- Register the event handlers
     <subscriber
       for=".interfaces.IPerson
