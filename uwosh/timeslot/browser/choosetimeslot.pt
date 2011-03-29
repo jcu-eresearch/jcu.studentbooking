@@ -20,7 +20,7 @@
                                 columns python:5;
                                 errors view/errors;">
 
-     <tal:comment replace="nothing"> 
+     <tal:comment > 
 	<dl class="collapsible collapsedOnLoad">
 	    <dt class="collapsibleHeader">
 	      Debug 
@@ -94,16 +94,16 @@
 	    <label for="campus" class="formQuestion">Show only:</label>
 	    <br/>
 	    <input class="drilldown"
-	           type="checkbox" id="campus_1" value="campus-TSV" name="campus:list" checked="checked" />
+	           type="checkbox" id="campus_1" value="campus-TSV" checked="checked" />
             <label for="campus_1">Townsville Sessions</label>
 	    <br/>
 	    <input class="drilldown"
-	           type="checkbox" id="campus_2" value="campus-CNS" name="campus:list" checked="checked" />
+	           type="checkbox" id="campus_2" value="campus-CNS" checked="checked" />
             <label for="campus_2">Cairns Sessions</label>
 	    <br/>
 	  </div>
 	   <input class="drilldown" type="hidden" id="faculty_" 
-	   value="faculty-XXXX" name="faculty:list" checked="checked" 
+	   value="faculty-XXXX" checked="checked" 
 	   tal:condition="not:isBookingStaff"
 	   tal:attributes="value python:'faculty-'+view.faculty_code;"
 		 />
@@ -113,19 +113,19 @@
             <label for="faculty" class="formQuestion">Show sessions from:</label>
 	    <br/>
 	    <input class="drilldown"
-	           type="checkbox" id="faculty_1" value="faculty-6100" name="faculty:list" checked="checked" />
+	           type="checkbox" id="faculty_1" value="faculty-6100" checked="checked" />
             <label for="faculty_1">FLBCA</label>
 	    <input class="drilldown"
-	           type="checkbox" id="faculty_2" value="faculty-6200" name="faculty:list" checked="checked" />
+	           type="checkbox" id="faculty_2" value="faculty-6200" checked="checked" />
             <label for="faculty_2">FMHMS</label>
 	    <input class="drilldown"
-	           type="checkbox" id="faculty_3" value="faculty-6600" name="faculty:list" checked="checked" />
+	           type="checkbox" id="faculty_3" value="faculty-6600" checked="checked" />
             <label for="faculty_3">FSE</label>
 	    <input class="drilldown"
-  	           type="checkbox" id="faculty_4" value="faculty-6700" name="faculty:list" checked="checked" />
+  	           type="checkbox" id="faculty_4" value="faculty-6700" checked="checked" />
             <label for="faculty_4">FAESS</label>
 	    <input class="drilldown"
-	           type="checkbox" id="faculty_5" value="faculty-6000" name="faculty:list" checked="checked" />
+	           type="checkbox" id="faculty_5" value="faculty-6000" checked="checked" />
             <label for="faculty_5">NF</label>
             <input type="button" id="faculty_all" value="All" name="faculty-all:button" />
             <input type="button" id="faculty_none" value="None" name="faculty-none:button" />
