@@ -4,10 +4,10 @@
  <action-provider name="portal_workflow"/>
  <action-provider name="portal_types"/>
  <action-provider name="portal_actions"/>
- 
+
  <object name="object" meta_type="CMF Action Category">
   <property name="title"></property>
-  
+
   <object name="ehs-reporting" meta_type="CMF Action">
    <property name="title">Reporting</property>
    <property name="description"></property>
@@ -21,7 +21,20 @@
    </property>
    <property name="visible">True</property>
   </object>
-  
+  <object name="ehs-send-notifications" meta_type="CMF Action">
+   <property name="title">Notifications</property>
+   <property name="description"></property>
+   <property name="url_expr">string:@@send-notifications</property>
+   <property name="icon_expr"></property>
+   <property
+      name="available_expr">python:object.Type() == 'Signup Sheet'</property>
+   <property name="permissions">
+    <element value="Manage portal"/>
+    <element value="jcu.booking: Manage bookings"/>
+   </property>
+   <property name="visible">True</property>
+  </object>
+
   <object name="clone" meta_type="CMF Action">
    <property name="title">Clone</property>
    <property name="description"></property>
@@ -35,6 +48,6 @@
    </property>
    <property name="visible">True</property>
   </object>
- 
+
  </object>
 </object>

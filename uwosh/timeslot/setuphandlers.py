@@ -26,6 +26,8 @@ def setupVarious(context):
     logger.info("Reindexing EHS booking session content.")
 
 def upgrade_timeslot_workflow(context, logger=None):
+    """ Upgrade workflow of timeslots and days
+    """
 
     if logger is None:
         # Called as upgrade step: define our own logger.
@@ -48,4 +50,12 @@ def upgrade_timeslot_workflow(context, logger=None):
                               'pending': 'open',
                               'published': 'open'}
                   )
+    return
+
+def upgrade_notifications_action(context, logger=None):
+    """Add the new EHS notifications portal action
+    """
+    #Run the workflow setup
+    setup = getToolByName(context, 'portal_setup')
+    setup.runImportStepFromProfile(PROFILE_ID, 'actions')
     return

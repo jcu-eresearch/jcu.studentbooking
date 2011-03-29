@@ -81,6 +81,15 @@
        sortkey="1"
        profile="uwosh.timeslot:default"
        />
+   <genericsetup:upgradeStep
+       title="Add new portal action for notifications"
+       description="Add email notification portal action"
+       source="*"
+       destination="3"
+       handler="uwosh.timeslot.setuphandlers.upgrade_notifications_action"
+       sortkey="1"
+       profile="uwosh.timeslot:default"
+       />
 
 
 

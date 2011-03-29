@@ -46,6 +46,13 @@ display:none;
 #formfield-form-widgets-faculty span.option {
 display:block;
 }
+.contenttreeWidget .navTreeItem.selectable a {
+border-bottom: 1px dashed #aaa;
+}
+.contenttreeWidget li {
+margin-bottom: 0.2em;
+}
+
 
 ul.collapsibleList.expanded
 {

@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="uwosh.timeslot"
+      metal:use-macro="context/main_template/macros/master">
+      
+    <metal:block fill-slot="main">
+    
+    <div class="form" metal:define-macro="form">
+
+        <h3 tal:condition="view/label | nothing">
+            <span tal:replace="view/label">Form title</span>:</h3>
+
+        <p class="discreet"
+           tal:define="description view/a_description | nothing"
+           tal:condition="description"
+           tal:content="description">
+           Description
+        </p>
+
+        <p>To modify email templates, use the 
+        <a href="#" tal:attributes="href string:${context/absolute_url}/edit#fieldsetlegend-emails;">Edit view</a> for the main booking page.
+        </p>
+
+        <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+
+    </div>
+        
+    </metal:block>
+    
+</html>

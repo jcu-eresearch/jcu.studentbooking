@@ -20,6 +20,8 @@ EHS_UNIQUE_FIELD_COMBO = ['stu_id',
                           'ssp_att_no',]
 
 EHS_TEMPLATING_ENGINE = Engine()
+SYNTAX_ERROR = 'Syntax'
+EVALUATION_ERROR = 'Evaluation'
 
 #We may want to calculate these from an SQL call...
 FACULTIES = (
@@ -63,6 +65,13 @@ EHS_EMAIL_TYPES = { EHS_CONFIRMATION_EMAIL:
                               { 'subject': 'Cancellation Confirmation',
                                 'bodyField': 'cancellationEmailBody'},
                   }
+
+#Convert our dictionary over to our common vocabulary format
+_ehs_email_types = [(type, EHS_EMAIL_TYPES[type]['subject']) for type in EHS_EMAIL_TYPES]
+#Turn our common vocab format into something suitable for zope forms
+EHS_NOTIFICATION_TERMS = [SimpleTerm(value=pair[0], token=pair[0], title=pair[1]) for pair in _ehs_email_types]
+EHS_NOTIFICATION_VOCABULARY = SimpleVocabulary(EHS_NOTIFICATION_TERMS)
+
 
 EHS_CSV_EXPORT_FORMAT = \
     ['Faculty',

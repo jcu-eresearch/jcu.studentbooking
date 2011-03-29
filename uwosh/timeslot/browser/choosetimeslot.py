@@ -148,7 +148,7 @@ class ChooseTimeSlot(BaseBrowserView):
            course_identifier = util.explodeCourseIdentifier(selectCourse)
            marker_value = True
 
-           valid_courses = [util.all(result) for result in [ \
+           valid_courses = [all(result) for result in [ \
                               [str(course[key]) == course_identifier[key] \
                               for key in course_identifier] for course in self.courses] \
                            ]

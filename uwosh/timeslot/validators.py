@@ -1,4 +1,3 @@
-import re
 from types import StringType
 
 from DateTime import DateTime
@@ -9,7 +8,7 @@ from Products.validation.interfaces.IValidator import IValidator
 from Products.validation.validators.BaseValidators import EMAIL_RE
 from Products.validation.validators.RegexValidator import ignoreRE, RegexValidator
 
-from zope.interface import implements
+from zope.interface import implements, Invalid
 
 def patched_validate_required(self, instance, value, errors):
     if not value:
@@ -81,6 +80,7 @@ class SessionSizeIsOkayValidator:
 
         return 1
 
+#Archetypes validators
 sanerValidators = [
     EndTimeAfterStartTimeValidator('isEndTimeAfterStartTime'),
     SessionSizeIsOkayValidator('isSessionSizeOkay'),
@@ -92,3 +92,8 @@ sanerValidators = [
                    errmsg=_(u'is not a valid email address. Please check you have entered a correct email.')),
 ]
 
+#Grok/z3c form validators
+def hasValue(value):
+    if not value:
+        raise Invalid(_(u"Please confirm this field."))
+    return True

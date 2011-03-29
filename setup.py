@@ -43,6 +43,8 @@ setup(name='uwosh.timeslot',
                         'collective.monkeypatcher>=1.0',
                         'collective.easytemplate',
                         'plone.directives.form',
+                        'z3c.relationfield',
+                        'plone.formwidget.contenttree',
                         # -*- Extra requirements: -*-
                         ],
       tests_require=tests_require,
