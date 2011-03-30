@@ -20,7 +20,7 @@
                                 columns python:5;
                                 errors view/errors;">
 
-     <tal:comment > 
+     <tal:comment replace="nothing"> 
 	<dl class="collapsible collapsedOnLoad">
 	    <dt class="collapsibleHeader">
 	      Debug 
