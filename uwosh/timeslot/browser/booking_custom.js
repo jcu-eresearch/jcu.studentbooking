@@ -20,10 +20,10 @@ jq(document).ready(function () {
 
         jq('input.drilldown').click(faceted_navigation);
 	jq('#faculty_all').click(function() {
-           jq('input[name="faculty:list"]:not(:checked)').attr('checked', true).each(faceted_navigation);
+           jq('input.drilldown[value^="faculty"]:not(:checked)').attr('checked', true).each(faceted_navigation);
 	});
 	jq('#faculty_none').click(function() {
-           jq('input[name="faculty:list"]:checked').attr('checked', false).each(faceted_navigation);
+           jq('input.drilldown[value^="faculty"]:checked').attr('checked', false).each(faceted_navigation);
 	});
 
 	//Hide this field by default
@@ -47,6 +47,23 @@ jq(document).ready(function () {
         }
 	//Highlight the row of a previous selection
         jq("input[name='slotSelection']:checked").parents('div.field tr').css('background-color', '#cef');
+	/*Show the errors on the page in a suitable manner.  Jump to the first
+	 * error on the page (try to change fieldset; jump to error)
+	 */
+	function fieldsetLegendForField(field) {
+	    var fieldset_id = jq(field).parent('fieldset').attr('id');
+	    return jq('a[href="#'+fieldset_id.replace('fieldset','fieldsetlegend')+'"]');
+	}
+	
+	var errors = jq('div.field.error');
+	if (errors.length > 0) {
+	    errors.each(function() {
+	    	    fieldsetLegendForField(this).css('color', 'red');
+		    });
+	    var first_error = errors.first();
+	    fieldsetLegendForField(first_error).click();
+	    location.hash = first_error.attr('id');
+	}
 
 
 	/*Handle clicks within a row itself, rather than just the radio button*/
