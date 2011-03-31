@@ -1,3 +1,4 @@
+from five import grok
 from zope.interface import implements
 
 from Products.Archetypes import atapi
@@ -6,7 +7,7 @@ from Products.ATContentTypes.content import schemata
 
 from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import IPerson
-from uwosh.timeslot.config import PROJECTNAME
+from uwosh.timeslot import config
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View
@@ -250,4 +251,4 @@ class Person(base.ATCTContent):
         reviewState = self.getReviewState()
         return self.portal_workflow.getTitleForStateOnType(reviewState, 'Person')
 
-atapi.registerType(Person, PROJECTNAME)
+atapi.registerType(Person, config.PROJECTNAME)

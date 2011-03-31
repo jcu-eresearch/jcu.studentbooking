@@ -1,5 +1,6 @@
 """Main product initializer
 """
+import os, csv
 from zope.i18nmessageid import MessageFactory
 from Products.Archetypes import atapi
 from Products.CMFCore import utils
@@ -20,7 +21,7 @@ from sqlalchemy import Table
 
 class EhsBookingMapper(MappedClassBase): pass
 
-#We're creating our SQLAlchemy wrapper and mapping our table here to the 
+#We're creating our SQLAlchemy wrapper and mapping our table here to the
 #class above.  All fields are our primary key because the view doesn't have
 #a primary key defined.  Go Oracle!
 wrapper = createSAWrapper(config.EHS_BOOKING_DB_CONNECTION_STRING, name=config.EHS_BOOKING_DB_CONNECTOR)
@@ -28,9 +29,19 @@ table = Table(config.EHS_BOOKING_TABLE_NAME, wrapper.metadata, schema=config.EHS
 ehs_mapper = mapper(EhsBookingMapper, table, primary_key=table.c._data.values(), properties={})
 wrapper.registerMapper(ehs_mapper, name=config.EHS_BOOKING_ABSOLUTE_NAME)
 
+#Create our cancellations file with headings if it doesn't exist already
+if not os.path.exists(config.EHS_CANCELLATION_LOG):
+    csv_log = open(config.EHS_CANCELLATION_LOG, 'a')
+    writer = csv.writer(csv_log,
+                        quotechar='"',
+                        quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(config.EHS_CANCELLATION_LOG_CSV_FORMAT)
+    csv_log.close()
 
-# Define a message factory for when this product is internationalised.
-# This will be imported with the special name "_" in most modules. Strings
+
+#
+## Define a message factory for when this product is internationalised.
+## This will be imported with the special name "_" in most modules. Strings
 # like _(u"message") will then be extracted by i18n tools for translation.
 
 timeslotMessageFactory = MessageFactory('uwosh.timeslot')
@@ -74,4 +85,4 @@ def initialize(context):
             extra_constructors = (constructor,),
             ).initialize(context)
 
-    
+

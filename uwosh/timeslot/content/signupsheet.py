@@ -12,7 +12,7 @@ from collective.easytemplate.fields import TemplatedTextField
 
 from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot.interfaces import ISignupSheet
-from uwosh.timeslot import config
+from uwosh.timeslot import config, util
 from uwosh.timeslot.content.person import DummyExposedPersonSchema
 
 
@@ -189,7 +189,7 @@ class SignupSheet(folder.ATFolder):
                         for person in session.getPeople():
                             if student_default_campus == [] or \
                                person.campus in student_default_campus:
-                                writer.writerow(self.buildCSVRow(day,
+                                writer.writerow(util.buildCSVRow(day,
                                                                  session,
                                                                  person)
                                                )
@@ -198,37 +198,6 @@ class SignupSheet(folder.ATFolder):
         buffer.close()
 
         return result
-
-    def buildCSVRow(self, day, session, person):
-        row = [session.getFacultyAbbreviation(),
-                day.getDate(),
-                session.getName(),
-                session.getTimeRange(),
-                session.campus,
-                person.crs_status,
-                person.stu_id,
-                person.crs_cd,
-                person.crs_nm,
-                person.sprd_code,
-                person.crs_year,
-                person.campus,
-                person.surname,
-                person.gvn_name,
-                person.home_ph,
-                person.mob_ph or '',
-                person.jcu_email or '',
-                person.pers_email or '',
-                person.getSubjectInfo() != '0' and 'Yes' or 'No',
-         person.getDifficultyWithEStudent() != '0' and 'Yes' or 'No',
-         person.getIntendToApplyForAdvancedStanding() != '0' and 'Yes' or 'No',
-         person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
-                                                             or 'No',
-                person.adv_std == 'Y' and 'Yes' or 'No',
-                person.intnl_stu == 'Y' and 'Yes' or 'No',
-                person.sanctions,
-                person.no_subjects_enr,
-               ]
-        return row
 
     def isCurrentUserSignedUpOrWaitingForAnySlot(self):
         username = self.getCurrentUsername()

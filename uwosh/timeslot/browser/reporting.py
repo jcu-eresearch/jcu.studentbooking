@@ -74,22 +74,32 @@ class ManagerReportExportForm(form.SchemaForm):
             return self.output
         return super(ManagerReportExportForm,self).render()
 
-    @button.buttonAndHandler(_(u'Generate'))
-    def handleGenerate(self, action):
-        data, errors = self.extractData()
-
+    def responseAsCSV(self, file_prefix):
         currentDateTime = datetime.now().strftime('%Y%m%d%H%M')
-        filename = '%s-%s.csv' % (self.context.Title().replace(' ', ''),
-                                   currentDateTime)
-
+        filename = '%s-%s-%s.csv' % (file_prefix,
+                                     self.context.Title().replace(' ', ''),
+                                     currentDateTime)
         self.request.response.setHeader('Content-Type', 'text/csv')
         self.request.response.setHeader('Content-Disposition', \
                                         'attachment; filename="%s"' % filename)
 
+
+    @button.buttonAndHandler(_(u'Generate Report'))
+    def handleGenerate(self, action):
+        data, errors = self.extractData()
+        self.responseAsCSV('ehsreport')
         self.output = self.context.exportToCSV(**data)
 
     @button.buttonAndHandler(_(u"Cancel"))
     def handleCancel(self, action):
         contextURL = self.context.absolute_url()
         self.request.response.redirect(contextURL)
+
+    @button.buttonAndHandler(_(u"Get Cancellations Log"))
+    def handleGetCancellations(self, action):
+        self.responseAsCSV('ehscancellations')
+        file = open(config.EHS_CANCELLATION_LOG, 'rb')
+        self.output = file.read()
+        file.close()
+
 

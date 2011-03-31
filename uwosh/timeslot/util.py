@@ -31,6 +31,36 @@ def getFacultyAbbreviation(faculty_orgu):
 def getCampusName(campus):
     return getCampusList().getValue(campus)
 
+def buildCSVRow(day, session, person):
+    row = [session.getFacultyAbbreviation(),
+           day.getDate(),
+           session.getName(),
+           session.getTimeRange(),
+           session.campus,
+           person.crs_status,
+           person.stu_id,
+           person.crs_cd,
+           person.crs_nm,
+           person.sprd_code,
+           person.crs_year,
+           person.campus,
+           person.surname,
+           person.gvn_name,
+           person.home_ph,
+           person.mob_ph or '',
+           person.jcu_email or '',
+           person.pers_email or '',
+           person.getSubjectInfo() != '0' and 'Yes' or 'No',
+           person.getDifficultyWithEStudent() != '0' and 'Yes' or 'No',
+           person.getIntendToApplyForAdvancedStanding() != '0' and 'Yes' or 'No',
+           person.getSubmittedApplicationForAdvancedStanding() and 'Yes' \
+                                                               or 'No',
+           person.adv_std == 'Y' and 'Yes' or 'No',
+           person.intnl_stu == 'Y' and 'Yes' or 'No',
+           person.sanctions,
+           person.no_subjects_enr,
+          ]
+    return row
 
 #XXX This is a quick workaround for the issue of rendering a custom error
 #message on the z3c form and getting the error in the right location.

@@ -2,6 +2,7 @@ from AccessControl import Unauthorized
 from Acquisition import aq_inner
 
 from zope.component import getMultiAdapter
+from zope.event import notify
 from zope.interface import implements, Interface
 from plone.memoize import instance
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -11,6 +12,7 @@ from uwosh.timeslot import timeslotMessageFactory as _
 from uwosh.timeslot import config, mail
 from uwosh.timeslot.browser.base import BaseBrowserView
 from uwosh.timeslot.content.person import ExposedPersonSchema, DummyExposedPersonSchema
+from uwosh.timeslot.events import PersonCancelledEvent
 from uwosh.timeslot import util
 
 class IChooseTimeSlot(Interface):
@@ -210,8 +212,9 @@ class ChooseTimeSlot(BaseBrowserView):
                         try:
                             #EMAIL: Send cancellation message to our user
                             mail.sendNotificationEmail(context=self.context,
-                                      person=person,
-                                      email_type=config.EHS_CANCELLATION_EMAIL)
+                                                       person=person,
+                                                       email_type=config.EHS_CANCELLATION_EMAIL)
+                            notify(PersonCancelledEvent(person))
                             plone_utils.addPortalMessage(_(u'Your selected booking was cancelled successfully.  You have been sent a confirmation email.'), 'info')
                         except:
                             raise

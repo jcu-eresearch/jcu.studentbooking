@@ -1,14 +1,21 @@
 """Common configuration constants
 """
 
+from App.config import getConfiguration
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from Products.Archetypes.atapi import DisplayList
 from collective.templateengines.backends.jinja import Engine
 
 PROJECTNAME = 'uwosh.timeslot'
 
+ehs_zope_config = getConfiguration().product_config[PROJECTNAME]
+
+EHS_BOOKING_DB_USER = ehs_zope_config.get('ehs-booking-db-user', 'ehs')
+EHS_BOOKING_DB_PASSWORD = ehs_zope_config.get('ehs-booking-db-password', 'ehs')
 EHS_BOOKING_DB_CONNECTOR = 'jcu.studentbooking.ehs_booking'
-EHS_BOOKING_DB_CONNECTION_STRING = 'oracle+cx_oracle://ehs:ehs@corp1db.jcu.edu.au:1729/corp'
+EHS_BOOKING_DB_CONNECTION_STRING = \
+        'oracle+cx_oracle://%s:%s@corp1db.jcu.edu.au:1729/corp' % \
+        (EHS_BOOKING_DB_USER, EHS_BOOKING_DB_PASSWORD)
 EHS_BOOKING_DB_SCHEMA = 'IF_SM'
 EHS_BOOKING_TABLE_NAME = 'EHS_BOOKING'
 EHS_BOOKING_ABSOLUTE_NAME = EHS_BOOKING_TABLE_NAME+'.'+EHS_BOOKING_DB_SCHEMA
@@ -72,6 +79,8 @@ _ehs_email_types = [(type, EHS_EMAIL_TYPES[type]['subject']) for type in EHS_EMA
 EHS_NOTIFICATION_TERMS = [SimpleTerm(value=pair[0], token=pair[0], title=pair[1]) for pair in _ehs_email_types]
 EHS_NOTIFICATION_VOCABULARY = SimpleVocabulary(EHS_NOTIFICATION_TERMS)
 
+EHS_CANCELLATION_LOG = ehs_zope_config.get('ehs-cancellation-log',
+                                           '/tmp/cancellations.log')
 
 EHS_CSV_EXPORT_FORMAT = \
     ['Faculty',
@@ -102,6 +111,11 @@ EHS_CSV_EXPORT_FORMAT = \
      'Subjects Enrolled']
 
 SORT_ORDER_VOCABULARY = SimpleVocabulary.fromValues(EHS_CSV_EXPORT_FORMAT)
+
+EHS_CANCELLATION_LOG_CSV_FORMAT = \
+    ['Cancellation Date',
+     'Cancellation Time',
+    ] + EHS_CSV_EXPORT_FORMAT
 
 ADD_PERMISSIONS = {
     'Person': 'uwosh.timeslot: Add Person',

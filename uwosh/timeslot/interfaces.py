@@ -1,4 +1,5 @@
 from zope import schema
+from zope.component.interfaces import IObjectEvent
 from zope.interface import Interface
 
 from zope.app.container.constraints import contains
@@ -18,6 +19,10 @@ class IDay(Interface):
 
 class ISignupSheet(Interface):
     pass
-        
+
 class ICloneable(Interface):
+    pass
+
+#Events
+class IPersonCancelledEvent(IObjectEvent):
     pass
