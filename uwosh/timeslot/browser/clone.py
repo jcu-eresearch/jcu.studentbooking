@@ -112,14 +112,13 @@ class CloneForm(formbase.PageForm):
 
     def cloneTimeSlot(self):
         properties = {}
+        ignored_fields = ['id', 'startTime', 'endTime']
         for key in TimeSlotSchema._fields.keys():
-            properties[key] = self.context[key]
+            if key not in ignored_fields:
+                properties[key] = self.context[key]
 
-        origStartTime = properties['startTime']
-        origEndTime = properties['endTime']
-        properties['emailBodyText'] = properties['emailBodyText'].getRaw()
-        del properties['startTime']
-        del properties['endTime']
+        origStartTime = self.context['startTime']
+        origEndTime = self.context['endTime']
         slotLength = (float(origEndTime) - float(origStartTime)) / 60 / 60 / 24
 
         numCreated = 0
