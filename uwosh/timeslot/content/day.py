@@ -47,14 +47,16 @@ class Day(folder.ATFolder):
     	    return self.date.strftime('%A, %d %B %Y')
 
     def getTimeSlots(self, faculty_code=''):
-        brains = self.portal_catalog.unrestrictedSearchResults(
-                             portal_type='Time Slot',
-                             path=self.getPath(),
-                             depth=1,
-                             sort_on='getStartTime',
-                             sort_order='ascending',
-                             getFaculty=faculty_code,
-                             )
+        kw = dict(portal_type='Time Slot',
+                  path=self.getPath(),
+                  depth=1,
+                  sort_on='getStartTime',
+                  sort_order='ascending',)
+        if faculty_code:
+            kw['getFaculty'] = faculty_code
+
+        brains = self.portal_catalog.unrestrictedSearchResults(**kw)
+
         now = DateTime()
         currentTime = DateTime(2000, 01, 01, now.hour(), now.minute())
 
