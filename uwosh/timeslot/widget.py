@@ -7,6 +7,9 @@ class TimeWidget(CalendarWidget):
         'show_hm' : True,
         'format' : '%I:%M %P'
         })
+
+    def getName(self):
+        return 'CalendarWidget'
     
     def process_form(self, instance, field, form, empty_marker=None,
                      emptyReturnsMarker=False, validating=True):

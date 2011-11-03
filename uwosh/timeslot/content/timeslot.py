@@ -20,7 +20,7 @@ TimeSlotSpecialSchema = atapi.Schema((
     atapi.DateTimeField('startTime',
         storage=atapi.AnnotationStorage(),
         required=True,
-        widget=TimeWidget(label=_('Start Time'),
+        widget=TimeWidget(label=_(u'Start Time'),
                           format='%I:%M %P')
     ),
 
@@ -28,7 +28,7 @@ TimeSlotSpecialSchema = atapi.Schema((
         storage=atapi.AnnotationStorage(),
         required=True,
         validators = ('isEndTimeAfterStartTime',),
-        widget=TimeWidget(label=_('End Time'),
+        widget=TimeWidget(label=_(u'End Time'),
                           show_ymd=False,
                           format='%I:%M %P')
     ),
