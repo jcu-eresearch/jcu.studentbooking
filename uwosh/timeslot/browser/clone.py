@@ -2,7 +2,8 @@ from zope import schema
 from zope.interface import Interface
 from zope.formlib import form
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-from Products.Five.formlib import formbase
+from five.formlib import formbase
+
 from zExceptions import BadRequest
 
 from uwosh.timeslot.interfaces import *
