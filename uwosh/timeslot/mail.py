@@ -20,7 +20,7 @@ def performTemplating(signup_sheet, person, email_type):
     emailSpecs = config.EHS_EMAIL_TYPES[email_type]
 
     #Get the right type of email field's contents here
-    email_body = signup_sheet[emailSpecs['bodyField']].decode('utf-8')
+    email_body = getattr(signup_sheet, emailSpecs['bodyField']).decode('utf-8')
 
     templateContext = getTemplateContext(person)
 
