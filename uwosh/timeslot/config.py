@@ -14,9 +14,9 @@ EHS_BOOKING_DB_USER = ehs_zope_config.get('ehs-booking-db-user', 'ehs')
 EHS_BOOKING_DB_PASSWORD = ehs_zope_config.get('ehs-booking-db-password', 'ehs')
 EHS_BOOKING_DB_CONNECTOR = 'jcu.studentbooking.ehs_booking'
 EHS_BOOKING_DB_CONNECTION_STRING = \
-        'oracle+cx_oracle://%s:%s@corp1db.jcu.edu.au:1729/corp' % \
+        'oracle+cx_oracle://%s:%s@host.jcu.edu.au:1234/database' % \
         (EHS_BOOKING_DB_USER, EHS_BOOKING_DB_PASSWORD)
-EHS_BOOKING_DB_SCHEMA = 'IF_SM'
+EHS_BOOKING_DB_SCHEMA = 'SCHEMA'
 EHS_BOOKING_TABLE_NAME = 'EHS_BOOKING'
 EHS_BOOKING_ABSOLUTE_NAME = EHS_BOOKING_TABLE_NAME+'.'+EHS_BOOKING_DB_SCHEMA
 
